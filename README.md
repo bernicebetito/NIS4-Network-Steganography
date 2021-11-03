@@ -19,13 +19,23 @@
 - [ ] Store payload (binary form) into the steganograms
 
 ### Connection Module
-- [ ] Task #1
+- [ ] Create the UDP Server (Receiver)
+  - [ ] Create the Server Handler
+  - [ ] Create the packet sniffer for steganograms
+- [ ] Create the UDP Client (Sender)
 
 ### Control Module
-- [ ] Task #1
+- [ ] Command Messages
+  - [ ] Begin Transmission
+  - [ ] Stop Transmission
+  - [ ] Return Codes
 
 ### Payload Extraction Module
-- [ ] Task #1
+- [ ] Save received packets into pcap file
+- [ ] Parse pcap file and save into list
+- [ ] Sort packets according to sequence number
+- [ ] Read key segments from packets and concatenate to form whole key
 
 ### Key Interpretation Module
-- [ ] Task #1
+- [ ] Hash symmetric key
+- [ ] Compare hash with hash received from Sender
