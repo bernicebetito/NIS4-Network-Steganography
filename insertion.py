@@ -38,4 +38,31 @@ for i in steganograms:
 # ----------------------------------------
 decoded = b64encode(key).decode()
 payloadA = ''.join(format(ord(i), '08b') for i in decoded)
-payloadB = hashlib.sha256(key)
+payloadB = hashlib.sha256(decoded.encode())
+
+start = 0
+end = 16
+divided_payload = []
+while start < len(payloadA):
+    extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payloadA) - end))
+    curr_payload = int(payloadA, 2) & int(extractor, 2)
+    curr_payload = curr_payload >> len(payloadA) - end
+    curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
+    divided_payload.append(curr_payload)
+    start += 16
+    end += 16
+
+print(*divided_payload, sep="\n")
+print("\n")
+
+reverse_payload = ""
+for i in divided_payload:
+    reverse_payload += i
+
+extracted_payload = ""
+for i in range(0, len(reverse_payload), 8):
+    curr_char = reverse_payload[i:i + 8]
+    extracted_payload = extracted_payload + chr(int(curr_char, 2))
+
+print(payloadB.digest())
+print(hashlib.sha256(extracted_payload.encode()).digest())
