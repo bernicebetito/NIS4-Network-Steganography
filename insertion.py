@@ -2,8 +2,8 @@
 from Crypto.Random import get_random_bytes
 # Packet creation / manipulation
 from scapy.all import IP
-# Decode byte
-from base64 import b64encode
+# Decode / Encode byte
+import binascii
 # Hash equivalent of key
 import hashlib
 
@@ -36,9 +36,9 @@ for i in steganograms:
 # ----------------------------------------
 # Payload Insertion Module
 # ----------------------------------------
-decoded = b64encode(key).decode()
+decoded = binascii.hexlify(key).decode()
 payloadA = ''.join(format(ord(i), '08b') for i in decoded)
-payloadB = hashlib.sha256(decoded.encode())
+payloadB = hashlib.sha256(binascii.unhexlify(decoded))
 
 start = 0
 end = 16
@@ -65,4 +65,4 @@ for i in range(0, len(reverse_payload), 8):
     extracted_payload = extracted_payload + chr(int(curr_char, 2))
 
 print(payloadB.digest())
-print(hashlib.sha256(extracted_payload.encode()).digest())
+print(hashlib.sha256(binascii.unhexlify(extracted_payload)).digest())
