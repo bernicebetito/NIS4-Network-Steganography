@@ -48,21 +48,23 @@ while start < len(payloadA):
     curr_payload = int(payloadA, 2) & int(extractor, 2)
     curr_payload = curr_payload >> len(payloadA) - end
     curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
-    divided_payload.append(curr_payload)
+
+    curr_str = ""
+    curr_charA = curr_payload[0:8]
+    curr_str = curr_str + chr(int(curr_charA, 2))
+    curr_charB = curr_payload[9:16]
+    curr_str = curr_str + chr(int(curr_charB, 2))
+
+    divided_payload.append(curr_str.encode())
     start += 16
     end += 16
 
 print(*divided_payload, sep="\n")
 print("\n")
 
-reverse_payload = ""
-for i in divided_payload:
-    reverse_payload += i
-
 extracted_payload = ""
-for i in range(0, len(reverse_payload), 8):
-    curr_char = reverse_payload[i:i + 8]
-    extracted_payload = extracted_payload + chr(int(curr_char, 2))
+for i in divided_payload:
+    extracted_payload += i.decode()
 
 print(payloadB.digest())
 print(hashlib.sha256(binascii.unhexlify(extracted_payload)).digest())
