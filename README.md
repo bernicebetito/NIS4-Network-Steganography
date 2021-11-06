@@ -2,21 +2,21 @@
 
 ## Module Sub Tasks
 ### Symmetric Key Generation Module
-- [ ] Produce 256 Bits / 32 Bytes of random data which will act as the symmetric key
+- [X] Produce 256 Bits / 32 Bytes of random data which will act as the symmetric key
 
 ### Steganogram Preparation Module
 - [ ] Gather the necessary information
-  - [ ]  Size of payload in bits
-  - [ ]  Number of bits allotted in each packet
-  - [ ]  Total number of steganograms needed
-  - [ ]  Source and Destination Addresses
+  - [X]  Size of payload in bits
+  - [X]  Number of bits allotted in each packet
+  - [X]  Total number of steganograms needed
+  - [X]  Source and Destination Addresses
   - [ ]  Dummy domain
-- [ ] Create the steganograms with the information gathered
+- [X] Create the steganograms with the information gathered
 
 ### Payload Insertion Module
-- [ ] Create hash of payload
-- [ ] Convert payload into binary
-- [ ] Store payload (binary form) into the steganograms
+- [X] Create hash of payload
+- [X] Convert payload into binary
+- [X] Store payload into the steganograms
 
 ### Connection Module
 - [ ] Create the UDP Server (Receiver)
