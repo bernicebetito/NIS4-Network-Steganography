@@ -17,7 +17,7 @@ print(key, end="\n\n")
 # ----------------------------------------
 # Steganogram Preparation Module
 # ----------------------------------------
-size_payload = 512
+size_payload = 256
 num_bits = 16
 n = size_payload / num_bits
 steganograms = []
@@ -29,20 +29,19 @@ while (len(steganograms) != n):
     packet = IP(src=src_address, dst=dst_address, options=[
         timestamp_option, timestamp_option, timestamp_option,
         timestamp_option, timestamp_option
-    ])
+    ]) / DNS(qd=DNSQR(qname="www.google.com"))
     steganograms.append(packet)
-
-for i in steganograms:
-    print(i.show())
-    print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
 
 
 # ----------------------------------------
 # Payload Insertion Module
 # ----------------------------------------
-decoded = binascii.hexlify(key).decode()
-payloadA = ''.join(format(ord(i), '08b') for i in decoded)
-payloadB = hashlib.sha256(binascii.unhexlify(decoded))
+payloadA = ''.join(format(i, '08b') for i in key)
+payloadA = ("0" * (256 - len(payloadA))) + payloadA
+payloadB = hashlib.sha256(key)
+print(payloadA)
+print(len(payloadA))
+print("\n\n")
 
 start = 0
 end = 16
@@ -57,51 +56,47 @@ while start < len(payloadA):
         payload_start = i
         payload_end = i + 4
         curr_char = curr_payload[payload_start:payload_end]
-        curr_char = chr(int(curr_char, 2))
-        insert_payload.append(curr_char.encode())
+        insert_payload.append(curr_char)
 
     start += 16
     end += 16
 
-print(*insert_payload, sep="\n")
-print("\n")
 
+timestamp_ctr = 0
+i = 0
+N = len(steganograms)
 
-timestamp_1 = 0
-timestamp_2 = 1
-timestamp_3 = 2
-timestamp_4 = 3
-for i in range(0, len(steganograms)):
-    """
-    steg_ctr = str(i + 1)
-    steg_ctr = chr(int(steg_ctr, 2))
-    print("\n\n=======================================================\n")
-    print(steg_ctr)
-    print("\n=======================================================\n\n")
-    """
+while i != N:
+    ts_options = []
 
-    insert_1 = b'01' + insert_payload[timestamp_1] + b'10'
-    insert_2 = b'01' + insert_payload[timestamp_2] + b'10'
-    insert_3 = b'01' + insert_payload[timestamp_3] + b'10'
-    insert_4 = b'01' + insert_payload[timestamp_4] + b'10'
-    payload_timestamp_1 = IPOption(b'\x44\x04\x05' + insert_1)
-    payload_timestamp_2 = IPOption(b'\x44\x04\x05' + insert_2)
-    payload_timestamp_3 = IPOption(b'\x44\x04\x05' + insert_3)
-    payload_timestamp_4 = IPOption(b'\x44\x04\x05' + insert_4)
-    steganograms[i].options = [
-        payload_timestamp_1, payload_timestamp_2,
-        payload_timestamp_3, payload_timestamp_4
-    ]
+    steg_ctr = i
+    steg_ctr = bin(steg_ctr)
+    steg_ctr = steg_ctr[2:]
+    steg_ctr = ("0" * (4 - len(steg_ctr))) + steg_ctr
 
-    timestamp_1 += 4
-    timestamp_2 += 4
-    timestamp_3 += 4
-    timestamp_4 += 4
+    for curr_option in range(-1, 4):
+        if curr_option < 0:
+            ovflw_flg = hex(int((steg_ctr + "0000"), 2))
+        else:
+            ovflw_flg = hex(int((insert_payload[curr_option + timestamp_ctr] + "0000"), 2))
+        ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
+        insert_option = binascii.unhexlify(ovflw_flg)
+        ts_options.append(IPOption(b'\x44\x04\x05' + insert_option))
+
+    steganograms[i].options = ts_options
+
+    timestamp_ctr += 4
+    i += 1
 
 
 for i in steganograms:
     print(i.show())
     print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
+
+
+for i in range(0, len(insert_payload)):
+    temp = chr(int(insert_payload[i], 2))
+    insert_payload[i] = temp.encode()
 
 
 decode_payload = ""
@@ -115,4 +110,8 @@ for i in range(0, len(bin_payload), 8):
     extracted_payload += chr(int(curr_char, 2))
 
 print(payloadB.digest())
-print(hashlib.sha256(binascii.unhexlify(extracted_payload)).digest())
+print(hashlib.sha256(bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))).digest())
+
+print("\n\n")
+print(key)
+print(bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8)))
