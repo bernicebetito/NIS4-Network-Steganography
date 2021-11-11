@@ -2,7 +2,7 @@
 from Crypto.Random import get_random_bytes
 # Packet creation / manipulation
 from scapy.all import *
-# Decode / Encode byte
+# Turn payload into byte
 import binascii
 # Hash equivalent of key
 import hashlib
