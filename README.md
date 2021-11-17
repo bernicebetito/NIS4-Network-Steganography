@@ -5,12 +5,12 @@
 - [X] Produce 256 Bits / 32 Bytes of random data which will act as the symmetric key
 
 ### Steganogram Preparation Module
-- [ ] Gather the necessary information
+- [x] Gather the necessary information
   - [X]  Size of payload in bits
   - [X]  Number of bits allotted in each packet
   - [X]  Total number of steganograms needed
   - [X]  Source and Destination Addresses
-  - [ ]  Dummy domain
+  - [x]  Dummy domain
 - [X] Create the steganograms with the information gathered
 
 ### Payload Insertion Module
