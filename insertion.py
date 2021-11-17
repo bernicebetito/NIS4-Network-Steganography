@@ -48,31 +48,18 @@ print("\n\n")
 # Get the hash value of the payload
 payloadB = hashlib.sha256(key)
 
-# Divide the payload
-start = 0
-end = 16
-insert_payload = []
-while start < len(payloadA):
-    extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payloadA) - end))
-    curr_payload = int(payloadA, 2) & int(extractor, 2)
-    curr_payload = curr_payload >> len(payloadA) - end
-    curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
-
-    for i in range(0, 16, 4):
-        payload_start = i
-        payload_end = i + 4
-        curr_char = curr_payload[payload_start:payload_end]
-        insert_payload.append(curr_char)
-
-    start += 16
-    end += 16
-
-
 # Insert the counter and payload
 timestamp_ctr = 0
+start = 0
+end = 16
+
+# For extraction & key interpretation
+insert_payload = []
+
+# Divide and insert the payload into the steganogram packets
 i = 0
 N = len(steganograms)
-while i != N:
+while i != N and start < len(payloadA):
     ts_options = []
 
     steg_ctr = i
@@ -80,11 +67,21 @@ while i != N:
     steg_ctr = steg_ctr[2:]
     steg_ctr = ("0" * (4 - len(steg_ctr))) + steg_ctr
 
-    for curr_option in range(-1, 4):
-        if curr_option < 0:
+    extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payloadA) - end))
+    curr_payload = int(payloadA, 2) & int(extractor, 2)
+    curr_payload = curr_payload >> len(payloadA) - end
+    curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
+
+    for payload_ctr in range(-4, 16, 4):
+        if payload_ctr < 0:
             ovflw_flg = hex(int((steg_ctr + "0000"), 2))
         else:
-            ovflw_flg = hex(int((insert_payload[curr_option + timestamp_ctr] + "0000"), 2))
+            payload_start = payload_ctr
+            payload_end = payload_ctr + 4
+            curr_char = curr_payload[payload_start:payload_end]
+            insert_payload.append(curr_char)
+            ovflw_flg = hex(int((curr_char + "0000"), 2))
+
         ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
         insert_option = binascii.unhexlify(ovflw_flg)
         ts_options.append(IPOption(b'\x44\x04\x05' + insert_option))
@@ -93,22 +90,26 @@ while i != N:
 
     timestamp_ctr += 4
     i += 1
+    start += 16
+    end += 16
 
 
-# Print contents of the packets
+print("\n=====================================\n")
+# Print contents of steganogram packets
 for i in steganograms:
     print(i.show())
     print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
 
+print("\n=====================================\n")
 
-# --------------------- NOT PART OF THE PROCESS!!! ---------------------
-# This part is for key interpretation / checking if division was correct
+
+# --------------------- !!! NOT PART OF THE PROCESS !!! ---------------------
+# This part is for extraction & key interpretation / checking if division was correct
 
 # Turn binary payload into bytes
 for i in range(0, len(insert_payload)):
     temp = chr(int(insert_payload[i], 2))
     insert_payload[i] = temp.encode()
-
 
 # Decode the payload
 decode_payload = ""
@@ -117,6 +118,10 @@ for i in insert_payload:
 
 # Turn the decoded payload into binary
 bin_payload = ''.join(format(ord(i), '04b') for i in decode_payload)
+
+# Compare the binary payload and the binary extracted
+print(payloadA, end="\n\n")
+print(bin_payload, end="\n\n")
 
 # Turn the binary into bytes
 extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))
