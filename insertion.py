@@ -36,13 +36,19 @@ while (len(steganograms) != n):
 # ----------------------------------------
 # Payload Insertion Module
 # ----------------------------------------
+
+# Turn payload into binary
 payloadA = ''.join(format(i, '08b') for i in key)
 payloadA = ("0" * (256 - len(payloadA))) + payloadA
-payloadB = hashlib.sha256(key)
+
 print(payloadA)
 print(len(payloadA))
 print("\n\n")
 
+# Get the hash value of the payload
+payloadB = hashlib.sha256(key)
+
+# Divide the payload
 start = 0
 end = 16
 insert_payload = []
@@ -62,10 +68,10 @@ while start < len(payloadA):
     end += 16
 
 
+# Insert the counter and payload
 timestamp_ctr = 0
 i = 0
 N = len(steganograms)
-
 while i != N:
     ts_options = []
 
@@ -89,29 +95,36 @@ while i != N:
     i += 1
 
 
+# Print contents of the packets
 for i in steganograms:
     print(i.show())
     print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
 
 
+# --------------------- NOT PART OF THE PROCESS!!! ---------------------
+# This part is for key interpretation / checking if division was correct
+
+# Turn binary payload into bytes
 for i in range(0, len(insert_payload)):
     temp = chr(int(insert_payload[i], 2))
     insert_payload[i] = temp.encode()
 
 
+# Decode the payload
 decode_payload = ""
 for i in insert_payload:
     decode_payload += i.decode()
 
+# Turn the decoded payload into binary
 bin_payload = ''.join(format(ord(i), '04b') for i in decode_payload)
-extracted_payload = ""
-for i in range(0, len(bin_payload), 8):
-    curr_char = bin_payload[i:i + 8]
-    extracted_payload += chr(int(curr_char, 2))
 
+# Turn the binary into bytes
+extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))
+
+# Compare the hash value of payload and extracted payload
 print(payloadB.digest())
-print(hashlib.sha256(bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))).digest())
+print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
 
-print("\n\n")
+# Comparing the original key and extracted payload
 print(key)
-print(bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8)))
+print(bytes(extracted_payload))
