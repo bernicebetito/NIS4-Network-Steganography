@@ -29,7 +29,7 @@ while (len(steganograms) != n):
     packet = IP(src=src_address, dst=dst_address, options=[
         timestamp_option, timestamp_option, timestamp_option,
         timestamp_option, timestamp_option
-    ]) / DNS(qd=DNSQR(qname="www.google.com"))
+    ]) / UDP(dport=12345) / DNS(id=1, rd=1, qd=DNSQR(qname="www.google.com", qtype="A"))
     steganograms.append(packet)
 
 
@@ -47,16 +47,17 @@ print("\n\n")
 
 # Get the hash value of the payload
 payloadB = hashlib.sha256(key)
-
-# Insert the counter and payload
-timestamp_ctr = 0
-start = 0
-end = 16
+print(payloadB)
+print(payloadB.digest())
+print("\n\n")
 
 # For extraction & key interpretation
 insert_payload = []
 
 # Divide and insert the payload into the steganogram packets
+timestamp_ctr = 0
+start = 0
+end = 16
 i = 0
 N = len(steganograms)
 while i != N and start < len(payloadA):
@@ -94,13 +95,16 @@ while i != N and start < len(payloadA):
     end += 16
 
 
-print("\n=====================================\n")
 # Print contents of steganogram packets
+packet_count = 1
+print("\n{:<51}\n".format("=" * 51))
 for i in steganograms:
+    print("\n{:<20} Packet {:<2} {:<20}\n".format(("x" * 20), packet_count, ("x" * 20)))
     print(i.show())
-    print("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
+    packet_count += 1
+    print("\n{:<51}\n".format("x" * 51))
 
-print("\n=====================================\n")
+print("\n{:<51}\n".format("=" * 51))
 
 
 # --------------------- !!! NOT PART OF THE PROCESS !!! ---------------------
@@ -133,3 +137,5 @@ print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
 # Comparing the original key and extracted payload
 print(key)
 print(bytes(extracted_payload))
+
+ans, unans = sr(steganograms, retry=0, timeout=5)
