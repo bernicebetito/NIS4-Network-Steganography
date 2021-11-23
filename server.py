@@ -1,4 +1,5 @@
-import socket, json, sys, traceback, re
+import socket, json, sys, traceback, re, scapy
+from scapy.all import *
 
 # JSON Return Codes
 begin = '{"command":"ret_code", "code":"BEGIN"}'
@@ -37,7 +38,7 @@ class StegServer(object):
     def handle(self):
         global sock
         self.ready_to_receive = 0
-        self.finished_receiving = 0
+        self.finished_receiving = False
 
         while True:
             try:
@@ -59,13 +60,15 @@ class StegServer(object):
                     print("Client " + str(self.clientAddress) + " has connected and will start sending steganograms.")
 
                     # Begin Sniffing Steganograms
+                    self.steganograms = sniff(count=16, filter='udp port 12345')
+                    print("Packets sniffed = " + str(len(self.steganograms)))
 
                 # Handle Stop Transmission Message
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
                     self.ready_to_receive = 0
 
                     # Stop Sniffing Steganograms
-                    self.finished_receiving = 1
+                    self.finished_receiving = True
 
                     # Ready return code
                     self.stopTransmissionResponse = to_python(success)

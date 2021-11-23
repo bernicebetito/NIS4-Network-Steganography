@@ -1,11 +1,14 @@
-import socket, json, sys, traceback, re
+import socket, json, sys, traceback, re, InsertionClass
+from scapy.all import *
 
 # JSON commands
 begin = '{"command":"begin", "packet_count":""}'
 stop = '{"command":"stop", "key_hash":""}'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ready_to_receive = 0
+has_connected = 0
+ready_to_send = 0
+
 
 # Function to convert a json object into a python object
 def to_python(jsonObj):
@@ -43,8 +46,8 @@ class StegClient(object):
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
-                global ready_to_receive
-                ready_to_receive = 1
+                global has_connected
+                has_connected = 1
             
             elif self.return_code["code"] == "ERROR":
                 print("An unexpected error has occured")
@@ -58,18 +61,33 @@ class StegClient(object):
             sock.close()
             sys.exit()
 
+    def create_steganograms(self):
+        try:
+            global ready_to_send
+            input("Ready to create steganograms, press any key to continue...")
+            steganogram_maker = InsertionClass.InsertionClass()
+            self.steganograms, self.hash = steganogram_maker.getSteganograms(socket.gethostbyname(socket.gethostname()), self.server_host)
+            ready_to_send = 1
+
+        except Exception as e:
+            print(str(e))
+            traceback.print_exc(e)
+            sock.close()
+            sys.exit() 
+
     def send_steganograms(self):
         try:
             global sock
-            global ready_to_receive
+            global ready_to_send
             input("Ready to send steganograms, press any key to continue...")
 
             # Send steganograms
+            send(self.steganograms)
 
             # Ready Stop Transmission Message and send to server
-            key_hash = "fb276d832de6b6a7bb5ea6df7d29e90a45ae6490"
+            key_hash = self.hash
             self.stopTransmissionRequest = to_python(stop)
-            self.stopTransmissionRequest["key_hash"] = key_hash
+            self.stopTransmissionRequest["key_hash"] = str(key_hash)
             self.stopTransmissionRequestJSON = to_json(self.stopTransmissionRequest)
             sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
@@ -79,8 +97,6 @@ class StegClient(object):
 
             if self.return_code["code"] == "SUCCESS":
                 print("Success, server received all steganograms.")
-                global ready_to_receive
-                ready_to_receive = 1
             
             elif self.return_code["code"] == "ERROR":
                 print("An unexpected error has occured")
@@ -89,7 +105,7 @@ class StegClient(object):
                 print("An unexpected error has occured")
 
             input("Steganograms have been successfully sent, press any key to continue...")
-            ready_to_receive = 0
+            ready_to_send = 0
 
         except Exception as e:
             print(str(e))
@@ -113,11 +129,14 @@ while True:
 steg_client = StegClient(server_host, server_port)
 
 # Attempt to connect to server
-while ready_to_receive == 0:
+while has_connected == 0:
     steg_client.connect_to_server()
 
+while ready_to_send == 0:
+    steg_client.create_steganograms()
+
 # Send steganograms
-while ready_to_receive == 1:
+while ready_to_send == 1:
     steg_client.send_steganograms()
 
 sock.close()
