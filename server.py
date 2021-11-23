@@ -60,8 +60,9 @@ class StegServer(object):
                     print("Client " + str(self.clientAddress) + " has connected and will start sending steganograms.")
 
                     # Begin Sniffing Steganograms
-                    self.steganograms = sniff(count=16, filter='udp port 12345')
-                    print("Packets sniffed = " + str(len(self.steganograms)))
+                    sniff_thread = AsyncSniffer(iface='eth0', filter='port 12345')
+                    sniff_thread.start()
+                    print("Sniff started")
 
                 # Handle Stop Transmission Message
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
@@ -69,6 +70,8 @@ class StegServer(object):
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
+                    steganograms = sniff_thread.stop()
+                    print(str(len(steganograms)))
 
                     # Ready return code
                     self.stopTransmissionResponse = to_python(success)
@@ -92,7 +95,7 @@ def main():
     while True:
         # Set variables for server address and server port
         server_host = input('Input server address: ')
-        server_port = 12345
+        server_port = 5555
 
         result = bool(re.match(regex, server_host))
         if (result):
