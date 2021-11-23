@@ -60,7 +60,7 @@ class StegServer(object):
                     print("Client " + str(self.clientAddress) + " has connected and will start sending steganograms.")
 
                     # Begin Sniffing Steganograms
-                    sniff_thread = AsyncSniffer(iface='eth0', filter='port 12345')
+                    sniff_thread = AsyncSniffer(filter='port 11234')
                     sniff_thread.start()
                     print("Sniff started")
 

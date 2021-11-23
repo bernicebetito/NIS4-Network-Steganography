@@ -88,7 +88,7 @@ class StegClient(object):
             input("Finished sending steganograms, press any key to continue...")
             key_hash = self.hash
             self.stopTransmissionRequest = to_python(stop)
-            self.stopTransmissionRequest["key_hash"] = str(key_hash)
+            self.stopTransmissionRequest["key_hash"] = str(key_hash.digest())
             self.stopTransmissionRequestJSON = to_json(self.stopTransmissionRequest)
             sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
