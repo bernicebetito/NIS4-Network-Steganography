@@ -19,16 +19,16 @@
 - [X] Store payload into the steganograms
 
 ### Connection Module
-- [ ] Create the UDP Server (Receiver)
-  - [ ] Create the Server Handler
+- [X] Create the UDP Server (Receiver)
+  - [X] Create the Server Handler
   - [ ] Create the packet sniffer for steganograms
-- [ ] Create the UDP Client (Sender)
+- [X] Create the UDP Client (Sender)
 
 ### Control Module
-- [ ] Command Messages
-  - [ ] Begin Transmission
-  - [ ] Stop Transmission
-  - [ ] Return Codes
+- [X] Command Messages
+  - [X] Begin Transmission
+  - [X] Stop Transmission
+  - [X] Return Codes
 
 ### Payload Extraction Module
 - [ ] Save received packets into pcap file
