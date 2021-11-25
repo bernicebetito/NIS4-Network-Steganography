@@ -14,7 +14,7 @@ for i in steganograms:
   temp_hex = binascii.hexlify(bytes(i.options[ctr])[3:])
   temp_bin = bin(int(temp_hex,16))[2:]
   temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
-  temp_bin = temp_bin[4:]
+  temp_bin = temp_bin[:4]
   test_extract += temp_bin
 
 # Turn binary payload into bytes
