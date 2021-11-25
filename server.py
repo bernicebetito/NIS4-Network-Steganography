@@ -74,6 +74,7 @@ class StegServer(object):
                     print(str(len(steganograms)))
                     for i in steganograms:
                         print(i.summary())
+                        print(i.show())
 
                     # Ready return code
                     self.stopTransmissionResponse = to_python(success)
