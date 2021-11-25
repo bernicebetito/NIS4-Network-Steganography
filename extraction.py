@@ -19,7 +19,7 @@ for i in steganograms:
 
 # Compare the binary payload and the binary extracted
 print(payloadA, end="\n\n")
-print(bin_payload, end="\n\n")
+print(test_extract, end="\n\n")
 str_1 = str(payloadA)
 str_2 = str(bin_payload)
 print("Checker:" + str_1 == str_2,end="\n\n")
