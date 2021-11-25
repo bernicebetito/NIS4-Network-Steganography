@@ -33,7 +33,9 @@ bin_payload = ''.join(format(ord(i), '04b') for i in decode_payload)
 # Compare the binary payload and the binary extracted
 print(payloadA, end="\n\n")
 print(bin_payload, end="\n\n")
-print("Checker:" + payloadA == bin_payload)
+str_1 = str(payloadA)
+str_2 = str(bin_payload)
+print("Checker:" + str_1 == str_2,end="\n\n")
 
 # Turn the binary into bytes
 extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))
@@ -41,11 +43,15 @@ extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(b
 # Compare the hash value of payload and extracted payload
 print(payloadB.digest())
 print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
-print("Checker:" + payloadB.digest() == hashlib.sha256(extracted_payload.digest(),end="\n\n")
+str_3 = str(payloadB.digest())
+str_4 = str(hashlib.sha256(extracted_payload).digest())
+print("Checker:" + atr_3 == str_4,end="\n\n")
 
 # Comparing the original key and extracted payload
 print(key)
 print(bytes(extracted_payload))
-print("Checker:" + key == bytes(extracted_payload))
+str_5 = str(key)
+str_6 = str(bytes(extracted_payload))
+print("Checker:" + str_5 == str_6))
 
 ans, unans = sr(steganograms, retry=0, timeout=5)
