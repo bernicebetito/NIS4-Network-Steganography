@@ -17,14 +17,6 @@ for i in steganograms:
   temp_bin = temp_bin[:4]
   test_extract += temp_bin
 
-# Decode the payload
-decode_payload = ""
-for i in test_extract:
-    decode_payload += i.decode()
-
-# Turn the decoded payload into binary
-bin_payload = ''.join(format(ord(i), '04b') for i in decode_payload)
-
 # Compare the binary payload and the binary extracted
 print(payloadA, end="\n\n")
 print(bin_payload, end="\n\n")
@@ -33,7 +25,7 @@ str_2 = str(bin_payload)
 print("Checker:" + str_1 == str_2,end="\n\n")
 
 # Turn the binary into bytes
-extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))
+extracted_payload = bytes(int(test_extract[i : i + 8], 2) for i in range(0, len(test_extract), 8))
 
 # Compare the hash value of payload and extracted payload
 print(payloadB.digest())
