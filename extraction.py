@@ -21,7 +21,7 @@ for i in steganograms:
 print(payloadA, end="\n\n")
 print(test_extract, end="\n\n")
 str_1 = str(payloadA)
-str_2 = str(bin_payload)
+str_2 = str(test_extract)
 print("Checker:" + str_1 == str_2,end="\n\n")
 
 # Turn the binary into bytes
