@@ -17,11 +17,6 @@ for i in steganograms:
   temp_bin = temp_bin[:4]
   test_extract += temp_bin
 
-# Turn binary payload into bytes
-for i in range(0, len(test_extract)):
-    temp = chr(int(test_extract[i], 2))
-    test_extract[i] = temp.encode()
-
 # Decode the payload
 decode_payload = ""
 for i in test_extract:
