@@ -73,7 +73,8 @@ class StegServer(object):
                     steganograms = sniff_thread.stop()
                     print(str(len(steganograms)))
                     for i in steganograms:
-                        print(i.show())
+                        for j in i.options:
+                            print(i.option[j].oflw)
 
                     # Ready return code
                     self.stopTransmissionResponse = to_python(success)
