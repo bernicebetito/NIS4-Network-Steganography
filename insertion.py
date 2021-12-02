@@ -57,7 +57,7 @@ print("\n\n")
 insert_payload = []
 
 # Divide and insert the payload into the steganogram packets
-timestamp_ctr = 0
+payload_ctr = 0
 start = 0
 end = 16
 i = 0
@@ -91,7 +91,7 @@ while i != N and start < len(payloadA):
 
     steganograms[i].options = ts_options
 
-    timestamp_ctr += 4
+    payload_ctr += 4
     i += 1
     start += 16
     end += 16
@@ -112,25 +112,37 @@ print("\n{:<51}\n".format("=" * 51))
 # --------------------- !!! NOT PART OF THE PROCESS !!! ---------------------
 # This part is for extraction & key interpretation / checking if division was correct
 
-# Turn binary payload into bytes
-for i in range(0, len(insert_payload)):
-    temp = chr(int(insert_payload[i], 2))
-    insert_payload[i] = temp.encode()
-
-# Decode the payload
-decode_payload = ""
-for i in insert_payload:
-    decode_payload += i.decode()
-
-# Turn the decoded payload into binary
-bin_payload = ''.join(format(ord(i), '04b') for i in decode_payload)
+test_extract = ""
+for i in steganograms:
+    temp_bytes = binascii.hexlify(bytes(i))
+    payload_ctr = False
+    for ctr in range(0, len(temp_bytes) - 2, 2):
+        check_byte = temp_bytes[ctr:ctr+2]
+        if check_byte == b'44' and temp_bytes[ctr+2:ctr+4] == b'04':
+            if payload_ctr:
+                temp_hex = temp_bytes[ctr + 6:ctr + 8]
+                temp_bin = bin(int(temp_hex, 16))[2:]
+                temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+                temp_bin = temp_bin[:4]
+                test_extract += temp_bin
+            else:
+                payload_ctr = True
+    """
+    for ctr in range(1, 5):
+        temp_hex = binascii.hexlify(bytes(i.options[ctr])[3:])
+        temp_bin = bin(int(temp_hex, 16))[2:]
+        temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+        temp_bin = temp_bin[:4]
+        test_extract += temp_bin
+    """
 
 # Compare the binary payload and the binary extracted
 print(payloadA, end="\n\n")
-print(bin_payload, end="\n\n")
+print(test_extract)
+print(payloadA == test_extract, end="\n\n")
 
 # Turn the binary into bytes
-extracted_payload = bytes(int(bin_payload[i : i + 8], 2) for i in range(0, len(bin_payload), 8))
+extracted_payload = bytes(int(test_extract[i : i + 8], 2) for i in range(0, len(test_extract), 8))
 
 # Compare the hash value of payload and extracted payload
 print(payloadB.digest())
@@ -140,4 +152,4 @@ print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
 print(key)
 print(bytes(extracted_payload))
 
-ans, unans = sr(steganograms, retry=0, timeout=5)
+send(steganograms)
