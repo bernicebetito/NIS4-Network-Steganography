@@ -33,7 +33,7 @@ class InsertionClass (object):
             packet = IP(src=src_address, dst=dst_address, options=[
                 timestamp_option, timestamp_option, timestamp_option,
                 timestamp_option, timestamp_option
-            ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype="A"))
+            ]) / UDP(dport=11234) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype="A"))
             steganograms.append(packet)
             dns_ctr += 1
 
