@@ -31,9 +31,9 @@ class extractionClass (object):
     # Compare the hash value of payload and extracted payload
     print(self.payloadB)
     print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
-    print("Checker:", self.payloadB == hashlib.sha256(extracted_payload).digest(), end="\n\n")
+    print("Checker:", self.payloadB == str(hashlib.sha256(extracted_payload).digest()), end="\n\n")
 
-    return extracted_payload, self.payloadB == hashlib.sha256(extracted_payload).digest(), hashlib.sha256(extracted_payload).digest()
+    return extracted_payload, self.payloadB == str(hashlib.sha256(extracted_payload).digest()), hashlib.sha256(extracted_payload).digest()
 
     # Comparing the original key and extracted payload
     #print(key)
