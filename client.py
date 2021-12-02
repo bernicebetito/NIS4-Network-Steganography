@@ -100,7 +100,7 @@ class StegClient(object):
                 print("Success, server received all steganograms.")
             
             elif self.return_code["code"] == "ERROR":
-                print("An unexpected error has occured")
+                print("Failed, server did not receive steganograms correctly.")
 
             else:
                 print("An unexpected error has occured")

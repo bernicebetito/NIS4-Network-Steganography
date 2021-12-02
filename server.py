@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, scapy
+import socket, json, sys, traceback, re, extractionClass
 from scapy.all import *
 
 # JSON Return Codes
@@ -66,21 +66,45 @@ class StegServer(object):
 
                 # Handle Stop Transmission Message
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
+                    print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
                     self.ready_to_receive = 0
+                    received_hash = self.message["key_hash"]
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
                     steganograms = sniff_thread.stop()
-                    print(str(len(steganograms)))
-                    for i in steganograms:
-                        print(i.summary())
-                        print(i.show())
 
-                    # Ready return code
-                    self.stopTransmissionResponse = to_python(success)
-                    self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                    print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
-                    print("Key hash received: " + self.message["key_hash"])
+                    if len(steganograms) == 16:
+
+                        # Extract and interpret key
+                        extractor = extractionClass.extractionClass()
+                        key, result, computed_hash = extractor.run(steganograms, received_hash)
+
+                        if result:
+                            print(f"Key {key} verified correct")
+                            print(f"Computed hash {computed_hash}")
+                            print(f"Received hash {received_hash}")
+
+                            # Ready return code
+                            self.stopTransmissionResponse = to_python(success)
+                            self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+                        else:
+                            print("Key hash computed is incorrect from received hash")
+
+                            # Ready return code
+                            self.stopTransmissionResponse = to_python(error)
+                            self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                            
+                    
+                    else:
+                        print("Did not receive all steganograms.")
+
+                        # Ready return code
+                        self.stopTransmissionResponse = to_python(error)
+                        self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+                    
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
