@@ -10,7 +10,6 @@ class extractionClass (object):
   def extractKey(self, steganograms):
     self.test_extract = ""
     for i in steganograms:
-      print (i.options[0].oflw)
 
       for ctr in range(1,5):
         temp_hex = binascii.hexlify(bytes(i.options[ctr])[3:])
