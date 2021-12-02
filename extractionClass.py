@@ -29,11 +29,11 @@ class extractionClass (object):
     extracted_payload = bytes(int(self.test_extract[i : i + 8], 2) for i in range(0, len(self.test_extract), 8))
 
     # Compare the hash value of payload and extracted payload
-    print(self.payloadB.digest())
+    print(self.payloadB)
     print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
-    print("Checker:", self.payloadB.digest() == hashlib.sha256(extracted_payload).digest(), end="\n\n")
+    print("Checker:", self.payloadB == hashlib.sha256(extracted_payload).digest(), end="\n\n")
 
-    return extracted_payload, self.payloadB.digest() == hashlib.sha256(extracted_payload).digest(), hashlib.sha256(extracted_payload).digest()
+    return extracted_payload, self.payloadB == hashlib.sha256(extracted_payload).digest(), hashlib.sha256(extracted_payload).digest()
 
     # Comparing the original key and extracted payload
     #print(key)
