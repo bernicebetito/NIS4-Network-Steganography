@@ -73,9 +73,8 @@ class StegServer(object):
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
                     steganograms = sniff_thread.stop()
-                    print(str(len(steganograms)))
-                    for i in steganograms:
-                        print(i.summary())
+                    print(f"Steganograms received: {str(len(steganograms))}")
+                    
 
                     if len(steganograms) == 16:
 

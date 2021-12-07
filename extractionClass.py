@@ -21,7 +21,7 @@ class extractionClass (object):
                     temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
                     temp_bin = temp_bin[:4]
                     self.test_extract += temp_bin
-                    print(temp_bin)
+                    #print(temp_bin)
                 else:
                     payload_ctr = True
 
@@ -36,9 +36,9 @@ class extractionClass (object):
     extracted_payload = bytes(int(self.test_extract[i : i + 8], 2) for i in range(0, len(self.test_extract), 8))
 
     # Compare the hash value of payload and extracted payload
-    print(self.payloadB)
-    print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
-    print("Checker:", self.payloadB == str(hashlib.sha256(extracted_payload).digest()), end="\n\n")
+    #print(self.payloadB)
+    #print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
+    #print("Checker:", self.payloadB == str(hashlib.sha256(extracted_payload).digest()), end="\n\n")
 
     return extracted_payload, self.payloadB == str(hashlib.sha256(extracted_payload).digest()), hashlib.sha256(extracted_payload).digest()
 

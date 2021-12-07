@@ -21,7 +21,7 @@
 ### Connection Module
 - [X] Create the UDP Server (Receiver)
   - [X] Create the Server Handler
-  - [ ] Create the packet sniffer for steganograms
+  - [X] Create the packet sniffer for steganograms
 - [X] Create the UDP Client (Sender)
 
 ### Control Module
@@ -34,8 +34,8 @@
 - [ ] Save received packets into pcap file
 - [ ] Parse pcap file and save into list
 - [ ] Sort packets according to sequence number
-- [ ] Read key segments from packets and concatenate to form whole key
+- [X] Read key segments from packets and concatenate to form whole key
 
 ### Key Interpretation Module
-- [ ] Hash symmetric key
-- [ ] Compare hash with hash received from Sender
+- [X] Hash symmetric key
+- [X] Compare hash with hash received from Sender
