@@ -93,7 +93,28 @@ class InsertionClass (object):
             i += 1
             start += 16
             end += 16
-        
+
+        index_dummy = []
+        start_dummy = 0
+        end_dummy = 2
+        while end_dummy <= 16:
+            curr_index = random.randint(start_dummy, end_dummy)
+            index_dummy.append(curr_index)
+            start_dummy = curr_index + 1
+            end_dummy = start_dummy + 2
+
+        for i in range(len(index_dummy)):
+            dummy_timestamp = []
+            for timestamp_ctr in range(5):
+                ovflw_flg = hex(int((bin(random.randint(0, 15))[2:] + "0000"), 2))
+                ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
+                insert_option = binascii.unhexlify(ovflw_flg)
+                dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
+
+            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=i,
+                     qd=DNSQR(qname="www.goog1e.com", qtype="A"))
+            steganograms.insert(index_dummy[i] + i, packet)
+
         return steganograms, payloadB
 
     def getSteganograms(self, src_address, dst_address):

@@ -6,12 +6,14 @@ from scapy.all import *
 import binascii
 # Hash equivalent of key
 import hashlib
+# Dummy Packets
+import random
 
 # ----------------------------------------
 # Symmetric Key Generation Module
 # ----------------------------------------
 key = get_random_bytes(32)
-print(key, end="\n\n")
+print("Key: ", key, "\n", len(key), " Bytes", end="\n\n")
 
 
 # ----------------------------------------
@@ -96,6 +98,30 @@ while i != N and start < len(payloadA):
     start += 16
     end += 16
 
+print("\n\n", end="Payload Hash: ")
+print(payloadB.digest(), end="\n\n")
+
+index_dummy = []
+start_dummy = 0
+end_dummy = 2
+while end_dummy <= 16:
+    curr_index = random.randint(start_dummy, end_dummy)
+    index_dummy.append(curr_index)
+    start_dummy = curr_index + 1
+    end_dummy = start_dummy + 2
+
+for i in range(len(index_dummy)):
+    dummy_timestamp = []
+    for timestamp_ctr in range(5):
+        ovflw_flg = hex(int((bin(random.randint(0, 15))[2:] + "0000"), 2))
+        ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
+        insert_option = binascii.unhexlify(ovflw_flg)
+        dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
+
+    packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=i, qd=DNSQR(
+        qname="www.goog1e.com", qtype="A"))
+    steganograms.insert(index_dummy[i] + i, packet)
+    print(index_dummy[i] + i)
 
 # Print contents of steganogram packets
 packet_count = 1
@@ -109,7 +135,7 @@ for i in steganograms:
 print("\n{:<51}\n".format("=" * 51))
 
 
-# --------------------- !!! NOT PART OF THE PROCESS !!! ---------------------
+# ------------------------- !!! NOT PART OF THE PROCESS !!! -------------------------
 # This part is for extraction & key interpretation / checking if division was correct
 
 test_extract = ""
@@ -152,4 +178,4 @@ print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
 print(key)
 print(bytes(extracted_payload))
 
-send(steganograms)
+# send(steganograms)
