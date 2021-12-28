@@ -14,8 +14,11 @@ class InsertionClass (object):
         # Symmetric Key Generation Module
         # ----------------------------------------
         key = get_random_bytes(32)
+        return key
+
+    def getXORKey(self):
         xor_key = get_random_bytes(32)
-        return key, xor_key
+        return xor_key
 
     def prepareSteganograms(self, qdomain, src_address, dst_address):
         # ----------------------------------------
@@ -40,7 +43,7 @@ class InsertionClass (object):
 
         return steganograms
 
-    def payloadInsertion(self, key, xor_key, steganograms, xor_steganograms):
+    def payloadInsertion(self, key, xor_key, steganograms):
         # ----------------------------------------
         # Payload Insertion Module
         # ----------------------------------------
@@ -50,33 +53,17 @@ class InsertionClass (object):
         payloadA = ''.join(format(i, '08b') for i in xored_key)
         payloadA = ("0" * (256 - len(payloadA))) + payloadA
 
-        xor_payload = ''.join(format(i, '08b') for i in xor_key)
-        xor_payload = ("0" * (256 - len(xor_payload))) + xor_payload
-
         # Get the hash value of the payload
         payloadB = hashlib.sha256(key)
 
-        # Insert payload into steganograms
-        steganograms = self.insertPayload(steganograms, payloadA)
-        xor_steganograms = self.insertPayload(xor_steganograms, xor_payload)
-
-        # Add dummy packets between steganograms
-        steganograms = self.addDummy(steganograms)
-
-        # Combine all steganograms into one list
-        steganograms = xor_steganograms + steganograms
-
-        return steganograms, payloadB
-
-    def insertPayload(self, packetList, payload):
         payload_ctr = 0
         start = 0
         end = 16
         i = 0
-        N = len(packetList)
+        N = len(steganograms)
 
         # Divide and insert the payload into the steganogram packets
-        while i != N and start < len(payload):
+        while i != N and start < len(payloadA):
             ts_options = []
 
             steg_ctr = i
@@ -84,9 +71,9 @@ class InsertionClass (object):
             steg_ctr = steg_ctr[2:]
             steg_ctr = ("0" * (4 - len(steg_ctr))) + steg_ctr
 
-            extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payload) - end))
-            curr_payload = int(payload, 2) & int(extractor, 2)
-            curr_payload = curr_payload >> len(payload) - end
+            extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payloadA) - end))
+            curr_payload = int(payloadA, 2) & int(extractor, 2)
+            curr_payload = curr_payload >> len(payloadA) - end
             curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
 
             for payload_ctr in range(-4, 16, 4):
@@ -102,16 +89,14 @@ class InsertionClass (object):
                 insert_option = binascii.unhexlify(ovflw_flg)
                 ts_options.append(IPOption(b'\x44\x04\x05' + insert_option))
 
-            packetList[i].options = ts_options
+            steganograms[i].options = ts_options
 
             payload_ctr += 4
             i += 1
             start += 16
             end += 16
 
-        return packetList
-
-    def addDummy(self, steganograms):
+        # Add the dummy packets between steganograms
         index_dummy = []
         start_dummy = 0
         end_dummy = 2
@@ -132,10 +117,11 @@ class InsertionClass (object):
             packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype="A"))
             steganograms.insert(index_dummy[i] + i, packet)
 
-    def getSteganograms(self, src_address, dst_address):
-        key, xor_key = self.getKey()
+        return steganograms, payloadB
+
+    def getSteganograms(self, src_address, dst_address, xor_key):
+        key = self.getKey()
         empty_steganograms = self.prepareSteganograms("www.google.com", src_address, dst_address)
-        empty_xor_steganograms = self.prepareSteganograms("www.g0ogle.com", src_address, dst_address)
-        steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, empty_xor_steganograms)
+        steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms)
 
         return steganograms, hash

@@ -22,30 +22,22 @@ print("XOR Key: ", xor_key, "\n", len(xor_key), " Bytes", end="\n\n")
 # ----------------------------------------
 # Steganogram Preparation Module
 # ----------------------------------------
-def createPackets(packetList, qdomain, src_address, dst_address):
-    size_payload = 256
-    num_bits = 16
-    n = size_payload / num_bits
-    dns_ctr = 0
-    while (len(packetList) != n):
-        timestamp_option = IPOption(b'\x44')
-        packet = IP(src=src_address, dst=dst_address, options=[
-            timestamp_option, timestamp_option, timestamp_option,
-            timestamp_option, timestamp_option
-        ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname=qdomain, qtype="A"))
-        packetList.append(packet)
-        dns_ctr += 1
-
-    return packetList
-
+size_payload = 256
+num_bits = 16
+n = size_payload / num_bits
+steganograms = []
 src_address = "192.168.254.108"
 dst_address = "192.168.254.132"
 
-steganograms = []
-steganograms = createPackets(steganograms, "www.google.com", src_address, dst_address)
-
-xor_steganograms = []
-xor_steganograms = createPackets(xor_steganograms, "www.go0gle.com", src_address, dst_address)
+dns_ctr = 0
+while (len(steganograms) != n):
+    timestamp_option = IPOption(b'\x44')
+    packet = IP(src=src_address, dst=dst_address, options=[
+        timestamp_option, timestamp_option, timestamp_option,
+        timestamp_option, timestamp_option
+    ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype="A"))
+    steganograms.append(packet)
+    dns_ctr += 1
 
 # ----------------------------------------
 # Payload Insertion Module
@@ -55,9 +47,6 @@ xor_steganograms = createPackets(xor_steganograms, "www.go0gle.com", src_address
 xored_key = bytes([a ^ b for a, b in zip(key, xor_key)])
 payloadA = ''.join(format(i, '08b') for i in xored_key)
 payloadA = ("0" * (256 - len(payloadA))) + payloadA
-
-xor_payload = ''.join(format(i, '08b') for i in xor_key)
-xor_payload = ("0" * (256 - len(xor_payload))) + xor_payload
 
 print(payloadA)
 print(len(payloadA))
@@ -70,52 +59,44 @@ print(payloadB.digest())
 print("\n\n")
 
 # Divide and insert the payload into the steganogram packets
-def insertPayload(packetList, payload):
-    payload_ctr = 0
-    start = 0
-    end = 16
-    i = 0
-    N = len(packetList)
+payload_ctr = 0
+start = 0
+end = 16
+i = 0
+N = len(steganograms)
 
-    while i != N and start < len(payload):
-        ts_options = []
+while i != N and start < len(payloadA):
+    ts_options = []
 
-        steg_ctr = i
-        steg_ctr = bin(steg_ctr)
-        steg_ctr = steg_ctr[2:]
-        steg_ctr = ("0" * (4 - len(steg_ctr))) + steg_ctr
+    steg_ctr = i
+    steg_ctr = bin(steg_ctr)
+    steg_ctr = steg_ctr[2:]
+    steg_ctr = ("0" * (4 - len(steg_ctr))) + steg_ctr
 
-        extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payload) - end))
-        curr_payload = int(payload, 2) & int(extractor, 2)
-        curr_payload = curr_payload >> len(payload) - end
-        curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
+    extractor = ("0" * start) + ("1" * 16) + ("0" * (len(payloadA) - end))
+    curr_payload = int(payloadA, 2) & int(extractor, 2)
+    curr_payload = curr_payload >> len(payloadA) - end
+    curr_payload = ("0" * (16 - len(format(curr_payload, 'b')))) + format(curr_payload, 'b')
 
-        for payload_ctr in range(-4, 16, 4):
-            if payload_ctr < 0:
-                ovflw_flg = hex(int((steg_ctr + "0000"), 2))
-            else:
-                payload_start = payload_ctr
-                payload_end = payload_ctr + 4
-                curr_char = curr_payload[payload_start:payload_end]
-                ovflw_flg = hex(int((curr_char + "0000"), 2))
+    for payload_ctr in range(-4, 16, 4):
+        if payload_ctr < 0:
+            ovflw_flg = hex(int((steg_ctr + "0000"), 2))
+        else:
+            payload_start = payload_ctr
+            payload_end = payload_ctr + 4
+            curr_char = curr_payload[payload_start:payload_end]
+            ovflw_flg = hex(int((curr_char + "0000"), 2))
 
-            ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
-            insert_option = binascii.unhexlify(ovflw_flg)
-            ts_options.append(IPOption(b'\x44\x04\x05' + insert_option))
+        ovflw_flg = ovflw_flg[2:] + ("0" * (2 - len(ovflw_flg[2:])))
+        insert_option = binascii.unhexlify(ovflw_flg)
+        ts_options.append(IPOption(b'\x44\x04\x05' + insert_option))
 
-        packetList[i].options = ts_options
+    steganograms[i].options = ts_options
 
-        payload_ctr += 4
-        i += 1
-        start += 16
-        end += 16
-
-    return packetList
-
-
-# Insert payload into steganograms
-steganograms = insertPayload(steganograms, payloadA)
-xor_steganograms = insertPayload(xor_steganograms, xor_payload)
+    payload_ctr += 4
+    i += 1
+    start += 16
+    end += 16
 
 # Insertion of dummy packets
 curr_index = 0
@@ -136,9 +117,6 @@ for curr_steg in range(num_steg):
         steganograms.insert(curr_index + j, packet)
     print("index: ", curr_index, "packets: ", num_packets, end="\n\n")
     curr_index += num_packets
-
-# Combine XOR Steganograms and Symmetric Key Steganograms
-steganograms = xor_steganograms + steganograms
 
 # Print Payload Hash
 print("\n\n", end="Payload Hash: ")

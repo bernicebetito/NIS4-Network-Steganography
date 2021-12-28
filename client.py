@@ -66,7 +66,8 @@ class StegClient(object):
             global ready_to_send
             input("Ready to create steganograms, press any key to continue...")
             steganogram_maker = InsertionClass.InsertionClass()
-            self.steganograms, self.hash = steganogram_maker.getSteganograms(socket.gethostbyname(socket.gethostname()), self.server_host)
+            xor_key = steganogram_maker.getXORKey()
+            self.steganograms, self.hash = steganogram_maker.getSteganograms(socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
             ready_to_send = 1
 
         except Exception as e:
