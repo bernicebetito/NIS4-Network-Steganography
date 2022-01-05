@@ -76,7 +76,7 @@ class StegServer(object):
                     print(f"Steganograms received: {str(len(steganograms))}")
                     
 
-                    if len(steganograms) == 16:
+                    if len(steganograms) != 0:
 
                         # Extract and interpret key
                         extractor = extractionClass.extractionClass()

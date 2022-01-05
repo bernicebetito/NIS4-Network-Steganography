@@ -17,7 +17,7 @@ class InsertionClass (object):
         return key
 
     def getXORKey(self):
-        xor_key = get_random_bytes(32)
+        xor_key = b"M\x80Q\xa7\x0b\x0c'h\x80\xc5\x9d@\xa1\xb2\xb8>?hl\xf6\xed7}\xb7\xbfQw\x06H\x93\xe5\xc3"
         return xor_key
 
     def prepareSteganograms(self, qdomain, src_address, dst_address):
