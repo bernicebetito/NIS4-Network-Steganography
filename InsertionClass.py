@@ -43,7 +43,7 @@ class InsertionClass (object):
 
         return steganograms
 
-    def payloadInsertion(self, key, xor_key, steganograms):
+    def payloadInsertion(self, key, xor_key, steganograms, src_address, dst_address):
         # ----------------------------------------
         # Payload Insertion Module
         # ----------------------------------------
@@ -114,7 +114,7 @@ class InsertionClass (object):
                 insert_option = binascii.unhexlify(ovflw_flg)
                 dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
-            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype="A"))
+            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype="A"))
             steganograms.insert(index_dummy[i] + i, packet)
 
         return steganograms, payloadB
@@ -122,6 +122,6 @@ class InsertionClass (object):
     def getSteganograms(self, src_address, dst_address, xor_key):
         key = self.getKey()
         empty_steganograms = self.prepareSteganograms("www.google.com", src_address, dst_address)
-        steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms)
+        steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, src_address, dst_address)
 
         return steganograms, hash

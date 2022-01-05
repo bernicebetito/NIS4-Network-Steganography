@@ -180,6 +180,7 @@ print(bytes(extracted_payload), end="\n\n")
 
 extracted_payload = bytes([a ^ b for a, b in zip(xor_key, extracted_payload)])
 print(key)
+print(xor_key)
 print(extracted_payload)
 
 # send(steganograms)
