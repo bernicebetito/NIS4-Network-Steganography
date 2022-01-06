@@ -35,7 +35,9 @@ class extractionClass (object):
     # Turn the binary into bytes
     xor_key = b"M\x80Q\xa7\x0b\x0c'h\x80\xc5\x9d@\xa1\xb2\xb8>?hl\xf6\xed7}\xb7\xbfQw\x06H\x93\xe5\xc3"
     extracted_payload = bytes(int(self.test_extract[i : i + 8], 2) for i in range(0, len(self.test_extract), 8))
+    print(f"Extracted key: {extracted_payload}")
     extracted_payload = bytes([a ^ b for a, b in zip(xor_key, extracted_payload)])
+    print(f"Extracted key after performing XOR operation: {extracted_payload}")
     # Compare the hash value of payload and extracted payload
     #print(self.payloadB)
     #print(hashlib.sha256(extracted_payload).digest(), end="\n\n")
