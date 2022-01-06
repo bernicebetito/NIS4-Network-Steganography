@@ -8,9 +8,7 @@ import hashlib
 class extractionClass (object):
 
   def extractKey(self, steganograms):
-   
   extracted = []
-  
    for i in steganograms:
     if "google" in i[DNS].qd.qname.decode():
         temp_bytes = binascii.hexlify(bytes(i))
@@ -27,31 +25,31 @@ class extractionClass (object):
                     extracted.append([curr_steg, i])
                     payload_ctr = True
 
-print("\n\n")
-# Sort the packet then append the packets to a new list
-extracted.sort()
-sorted_steganograms = []
-for current in extracted:
-    print("current: ", current[0])
-    sorted_steganograms.append(current[1])
-    
-print("\n\n")      
-    self.test_extract = ""
-    for i in sorted_steganograms:
-      if "google" in i[DNS].qd.qname.decode():
-          temp_bytes = binascii.hexlify(bytes(i))
-          payload_ctr = False
-          for ctr in range(0, len(temp_bytes) - 2, 2):
-              check_byte = temp_bytes[ctr:ctr+2]
-              if check_byte == b'44' and temp_bytes[ctr+2:ctr+4] == b'04':
-                  if payload_ctr:
-                      temp_hex = temp_bytes[ctr + 6:ctr + 8]
-                      temp_bin = bin(int(temp_hex, 16))[2:]
-                      temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
-                      temp_bin = temp_bin[:4]
-                      self.test_extract += temp_bin
-                  else:
-                      payload_ctr = True
+  print("\n\n")
+  # Sort the packet then append the packets to a new list
+  extracted.sort()
+  sorted_steganograms = []
+  for current in extracted:
+      print("current: ", current[0])
+      sorted_steganograms.append(current[1])
+
+  print("\n\n")      
+      self.test_extract = ""
+      for i in sorted_steganograms:
+        if "google" in i[DNS].qd.qname.decode():
+            temp_bytes = binascii.hexlify(bytes(i))
+            payload_ctr = False
+            for ctr in range(0, len(temp_bytes) - 2, 2):
+                check_byte = temp_bytes[ctr:ctr+2]
+                if check_byte == b'44' and temp_bytes[ctr+2:ctr+4] == b'04':
+                    if payload_ctr:
+                        temp_hex = temp_bytes[ctr + 6:ctr + 8]
+                        temp_bin = bin(int(temp_hex, 16))[2:]
+                        temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+                        temp_bin = temp_bin[:4]
+                        self.test_extract += temp_bin
+                    else:
+                        payload_ctr = True
 
   # Compare the binary payload and the binary extracted
   #print(payloadA, end="\n\n")
