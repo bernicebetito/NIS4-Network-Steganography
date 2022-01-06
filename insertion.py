@@ -167,9 +167,35 @@ print("\n\n")
 # Sort the packet then append the packets to a new list
 extracted.sort()
 sorted_steganograms = []
+
+# For determining if all steganograms were received
+steg_count = 0
+
 for current in extracted:
     print("current: ", current[0])
-    sorted_steganograms.append(current[1])
+    if current[0] == steg_count:
+        sorted_steganograms.append(current[1])
+        steg_count += 1
+    # else:
+        # Ask for the missing steganogram
+        """
+        Idea ko is some callable function will return the steganogram
+        then check if the returned steganogram is correct by checking
+        the counter and the DNS domain then append that packet sa
+        sorted_steganograms list.
+        
+        So smth like this:
+        missing_packet = function()
+        
+        Same process as extracting the counter except not in for loop na,
+        only for one packet then under the if statement [if not payload_ctr]
+        Do the comparing of the retrieved counter and steg_count. If equal,
+        then insert into the sorted_steganograms list and increase steg_count
+        by 1:
+        if curr_steg == steg_count:
+            sorted_steganograms.insert(steg_count, missing_packet)
+            steg_count += 1
+        """
 
 print("\n\n")
 test_extract = ""
