@@ -96,6 +96,9 @@ class InsertionClass (object):
             start += 16
             end += 16
 
+        # Shuffle steganograms, for testing the sorting portion
+        random.shuffle(steganograms)
+
         # Add the dummy packets between steganograms
         index_dummy = []
         start_dummy = 0
