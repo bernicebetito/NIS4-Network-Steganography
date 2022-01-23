@@ -148,6 +148,7 @@ class InsertionClass (object):
                             temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
                             temp_bin = temp_bin[:4]
                             curr_ctr = int(temp_bin, 2)
-                            
+                            payload_ctr = True
+
                             if curr_ctr == steg_ctr:
                                 return i

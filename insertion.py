@@ -137,12 +137,63 @@ for i in steganograms:
 print("\n{:<51}\n".format("=" * 51))
 
 # ------------------------- !!! NOT PART OF THE PROCESS !!! -------------------------
-# This part is for extraction & key interpretation / checking if division was correct
+# This part is for extraction & key interpretation
+"""
+GUIDE
+"Actual steganogram" => steganograms that contain the symmetric key
 
-print("\n\n")
+missing_indexes =>  list which contains the counter of the actual steganogram to be removed / deemed missing
+                => [0, 1, 2]
+
+missing_steganograms    => list which contains all the steganograms except for the "missing" ones
+                        => [steganogram]
+
+extracted   => list which contains the actual steganograms and their counter
+            => [[actual_steg, counter]]
+
+sorted_steganograms => list which contains the actual steganograms
+                    => [actual_steg]
+
+sorted_indexes  => list which contains all the counters of the retrieved actual steganograms
+                => [0, 1, 2]
+"""
+
+# To test missing steganograms
+missing_steganograms = []
+
+# Get random indexes of actual steganograms to remove
+missing_indexes = []
+for x in range(5):
+    temp_index = random.randint(0, 15)
+    while temp_index in missing_indexes:
+        temp_index = random.randint(0, 15)
+    missing_indexes.append(temp_index)
+
+# Append steganograms to the missing_steganograms list except for the
+# actual ones with an index which is in the missing_indexes list
+for i in steganograms:
+    if "google" in i[DNS].qd.qname.decode():
+        temp_bytes = binascii.hexlify(bytes(i))
+        payload_ctr = False
+        for ctr in range(0, len(temp_bytes) - 2, 2):
+            check_byte = temp_bytes[ctr:ctr+2]
+            if check_byte == b'44' and temp_bytes[ctr+2:ctr+4] == b'04':
+                if not payload_ctr:
+                    temp_hex = temp_bytes[ctr + 6:ctr + 8]
+                    temp_bin = bin(int(temp_hex, 16))[2:]
+                    temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+                    temp_bin = temp_bin[:4]
+                    curr_steg = int(temp_bin, 2)
+                    payload_ctr = True
+
+                    if curr_steg not in missing_indexes:
+                        missing_steganograms.append(i)
+    else:
+        missing_steganograms.append(i)
+
 # Extract the counter of each steganogram
 extracted = []
-for i in steganograms:
+for i in missing_steganograms:
     if "google" in i[DNS].qd.qname.decode():
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
@@ -157,45 +208,75 @@ for i in steganograms:
                     temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
                     temp_bin = temp_bin[:4]
                     curr_steg = int(temp_bin, 2)
-                    print("random: ", curr_steg)
 
                     # Append counter and the whole steganogram
                     extracted.append([curr_steg, i])
                     payload_ctr = True
 
-print("\n\n")
+
+# This function simulates a call to findSteganogram found in the InsertionClass
+# It returns the missing steganogram if found
+def getMissingSteg(steg_num):
+    for i in steganograms:
+        if "google" in i[DNS].qd.qname.decode():
+            temp_bytes = binascii.hexlify(bytes(i))
+            payload_ctr = False
+            for ctr in range(0, len(temp_bytes) - 2, 2):
+                check_byte = temp_bytes[ctr:ctr + 2]
+                if check_byte == b'44' and temp_bytes[ctr + 2:ctr + 4] == b'04':
+                    if not payload_ctr:
+                        temp_hex = temp_bytes[ctr + 6:ctr + 8]
+                        temp_bin = bin(int(temp_hex, 16))[2:]
+                        temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+                        temp_bin = temp_bin[:4]
+                        curr_ctr = int(temp_bin, 2)
+                        payload_ctr = True
+
+                        if curr_ctr == steg_num:
+                            return i
+
+
 # Sort the packet then append the packets to a new list
 extracted.sort()
 sorted_steganograms = []
+sorted_indexes = []
 
-# For determining if all steganograms were received
-steg_count = 0
+# Append the steganogram and counter to their respective list
+for x in extracted:
+    sorted_steganograms.append(x[1])
+    sorted_indexes.append(x[0])
 
-for current in extracted:
-    print("current: ", current[0])
-    if current[0] == steg_count:
-        sorted_steganograms.append(current[1])
-        steg_count += 1
-    # else:
-        # Ask for the missing steganogram
-        """
-        Idea ko is some callable function will return the steganogram
-        then check if the returned steganogram is correct by checking
-        the counter and the DNS domain then append that packet sa
-        sorted_steganograms list.
-        
-        So smth like this:
-        missing_packet = function()
-        
-        Same process as extracting the counter except not in for loop na,
-        only for one packet then under the if statement [if not payload_ctr]
-        Do the comparing of the retrieved counter and steg_count. If equal,
-        then insert into the sorted_steganograms list and increase steg_count
-        by 1:
-        if curr_steg == steg_count:
-            sorted_steganograms.insert(steg_count, missing_packet)
-            steg_count += 1
-        """
+# List comprehension to retrieve the missing indexes
+"""
+What happens is the for loop iterates through 0 to 16 and if the current number (steg_ctr) isn't
+in the sorted_indexes list, append the current number (steg_ctr) to the extracted_indexes list
+"""
+extracted_indexes = [steg_ctr for steg_ctr in range(0, 16) if steg_ctr not in sorted_indexes]
+
+print("\n\n")
+print(missing_indexes)
+print(extracted_indexes)
+
+# Retrieve the missing steganograms by looping through the extracted_indexes list and calling
+# getMissingSteg() for each element in the list
+for x in extracted_indexes:
+    missing_steg = getMissingSteg(x)
+    if "google" in missing_steg[DNS].qd.qname.decode():
+        temp_bytes = binascii.hexlify(bytes(missing_steg))
+        payload_ctr = False
+        for ctr in range(0, len(temp_bytes) - 2, 2):
+            check_byte = temp_bytes[ctr:ctr + 2]
+            if check_byte == b'44' and temp_bytes[ctr + 2:ctr + 4] == b'04':
+                if not payload_ctr:
+                    temp_hex = temp_bytes[ctr + 6:ctr + 8]
+                    temp_bin = bin(int(temp_hex, 16))[2:]
+                    temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
+                    temp_bin = temp_bin[:4]
+                    curr_steg = int(temp_bin, 2)
+                    payload_ctr = True
+
+                    if curr_steg == x:
+                        sorted_steganograms.insert(x, missing_steg)
 
 print("\n\n")
 test_extract = ""
