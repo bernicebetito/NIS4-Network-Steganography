@@ -130,7 +130,7 @@ class InsertionClass (object):
         empty_steganograms = self.prepareSteganograms("www.google.com", src_address, dst_address)
         self.steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, src_address, dst_address)
 
-        return steganograms, hash
+        return self.steganograms, hash
 
     # Retrieves the missing steganogram.
     # steg_ctr = int => Steganogram Counter

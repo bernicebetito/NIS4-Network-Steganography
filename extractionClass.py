@@ -37,7 +37,7 @@ class extractionClass (object):
     for current in extracted:
         sorted_steganograms.append(current[1])
 
-    test_extract = ""
+    self.test_extract = ""
     for i in sorted_steganograms:
         if "google" in i[DNS].qd.qname.decode():
             temp_bytes = binascii.hexlify(bytes(i))
@@ -50,7 +50,7 @@ class extractionClass (object):
                         temp_bin = bin(int(temp_hex, 16))[2:]
                         temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
                         temp_bin = temp_bin[:4]
-                        test_extract += temp_bin
+                        self.test_extract += temp_bin
                     else:
                         payload_ctr = True
 
