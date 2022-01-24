@@ -110,6 +110,7 @@ class StegServer(object):
                         print("Did not receive all steganograms.")
 
                         # Ready return code
+                        self.ready_to_receive = 0
                         self.stopTransmissionResponse = to_python(error)
                         self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
 
@@ -163,6 +164,7 @@ class StegServer(object):
                         print("Did not receive all steganograms.")
 
                         # Ready return code
+                        self.ready_to_receive = 0
                         self.stopTransmissionResponse = to_python(error)
                         self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
 
