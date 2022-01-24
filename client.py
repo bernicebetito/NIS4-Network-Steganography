@@ -27,6 +27,7 @@ class StegClient(object):
     def __init__(self, server_host, server_port):
         self.server_host = server_host
         self.server_port = server_port
+        self.steganogram_maker = InsertionClass.InsertionClass()
 
     def connect_to_server(self):
         try:
@@ -48,7 +49,7 @@ class StegClient(object):
                 print("Success, established connection with server")
                 global has_connected
                 has_connected = 1
-            
+
             elif self.return_code["code"] == "ERROR":
                 print("An unexpected error has occured")
 
@@ -65,55 +66,72 @@ class StegClient(object):
         try:
             global ready_to_send
             input("Ready to create steganograms, press any key to continue...")
-            steganogram_maker = InsertionClass.InsertionClass()
-            xor_key = steganogram_maker.getXORKey()
-            self.steganograms, self.hash = steganogram_maker.getSteganograms(socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
+            xor_key = self.steganogram_maker.getXORKey()
+            self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
+                socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
             ready_to_send = 1
 
         except Exception as e:
             print(str(e))
             traceback.print_exc(e)
             sock.close()
-            sys.exit() 
+            sys.exit()
 
     def send_steganograms(self):
         try:
             global sock
             global ready_to_send
             input("Ready to send steganograms, press any key to continue...")
-
-            # Send steganograms
-            send(self.steganograms)
-
-            # Ready Stop Transmission Message and send to server
-            input("Finished sending steganograms, press any key to continue...")
             key_hash = self.hash
             self.stopTransmissionRequest = to_python(stop)
             self.stopTransmissionRequest["key_hash"] = str(key_hash.digest())
             self.stopTransmissionRequestJSON = to_json(self.stopTransmissionRequest)
-            sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
-            # Process return code
-            self.data = sock.recv(1024)
-            self.return_code = to_python(self.data.decode("utf-8"))
+            while ready_to_send:
+                # Send steganograms
+                send(self.steganograms)
 
-            if self.return_code["code"] == "SUCCESS":
-                print("Success, server received all steganograms.")
-            
-            elif self.return_code["code"] == "ERROR":
-                print("Failed, server did not receive steganograms correctly.")
+                # Ready Stop Transmission Message and send to server
+                input("Finished sending steganograms, press any key to continue...")
+                sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
-            else:
-                print("An unexpected error has occured")
+                # Process return code
+                self.data = sock.recv(1024)
+                self.return_code = to_python(self.data.decode("utf-8"))
 
-            input("Steganograms have been successfully sent, press any key to continue...")
-            ready_to_send = 0
+                if self.return_code["code"] == "SUCCESS":
+                    print("Success, server received all steganograms.")
+                    ready_to_send = 0
+                    input("Steganograms have been successfully sent, press any key to continue...")
+
+                elif self.return_code["code"] == "ERROR":
+                    print("Failed, server did not receive steganograms correctly.")
+                    ready_to_send = 0
+                    input("Steganograms have been successfully sent, press any key to continue...")
+
+                elif self.return_code["code"] == "MISSING":
+                    print("Resending missing packets.")
+                    missing_indexes = list(self.return_code["indexes"])
+                    self.steganograms = []
+                    for current in missing_indexes:
+                        self.steganograms.append(self.steganogram_maker.findSteganogram(int(current)))
+
+                    missing_ret = '{"command":"missing", "key_hash":""}'
+                    self.stopTransmissionRequest = to_python(missing_ret)
+                    self.stopTransmissionRequest["key_hash"] = str(key_hash.digest())
+                    self.stopTransmissionRequestJSON = to_json(self.stopTransmissionRequest)
+
+                else:
+                    print("An unexpected error has occured")
+                    ready_to_send = 0
+                    input("Steganograms have been successfully sent, press any key to continue...")
 
         except Exception as e:
             print(str(e))
             traceback.print_exc(e)
             sock.close()
             sys.exit()
+
 
 regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 while True:
