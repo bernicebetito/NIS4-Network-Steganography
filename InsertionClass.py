@@ -130,11 +130,12 @@ class InsertionClass (object):
         empty_steganograms = self.prepareSteganograms("www.google.com", src_address, dst_address)
         self.steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, src_address, dst_address)
 
-        return self.steganograms, hash
+        return self.steganograms[:10], hash
 
     # Retrieves the missing steganogram.
     # steg_ctr = int => Steganogram Counter
-    def findSteganogram(self, steg_ctr):
+    def findSteganogram(self, steg_indexes):
+        missing_steganograms = []
         for i in self.steganograms:
             if "google" in i[DNS].qd.qname.decode():
                 temp_bytes = binascii.hexlify(bytes(i))
@@ -150,5 +151,8 @@ class InsertionClass (object):
                             curr_ctr = int(temp_bin, 2)
                             payload_ctr = True
 
-                            if curr_ctr == steg_ctr:
-                                return i
+                            if curr_ctr in steg_indexes:
+                                missing_steganograms.append(i)
+            else:
+                missing_steganograms.append(i)
+        return missing_steganograms

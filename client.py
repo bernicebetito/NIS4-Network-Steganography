@@ -112,9 +112,8 @@ class StegClient(object):
                 elif self.return_code["code"] == "MISSING":
                     print("Resending missing packets.")
                     missing_indexes = list(self.return_code["indexes"])
-                    self.steganograms = []
-                    for current in missing_indexes:
-                        self.steganograms.append(self.steganogram_maker.findSteganogram(int(current)))
+                    missing_indexes = [int(x) for x in missing_indexes]
+                    self.steganograms = self.steganogram_maker.findSteganogram(missing_indexes)
 
                     missing_ret = '{"command":"missing", "key_hash":""}'
                     self.stopTransmissionRequest = to_python(missing_ret)
