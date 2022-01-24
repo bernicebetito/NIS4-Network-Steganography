@@ -8,6 +8,7 @@ error = '{"command":"ret_code", "code":"ERROR"}'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+
 # Function to convert a json object into a python object
 def to_python(jsonObj):
     data = json.loads(jsonObj)
@@ -19,6 +20,7 @@ def to_json(pythonObj):
     data = json.dumps(pythonObj)
     return data
 
+
 class StegServer(object):
 
     def __init__(self, server_host, server_port):
@@ -28,7 +30,7 @@ class StegServer(object):
             # Bind socket
             sock.bind((server_host, server_port))
             print("Server online...")
-        
+
         except Exception as e:
             print(str(e))
             traceback.print_exc(e)
@@ -110,7 +112,6 @@ class StegServer(object):
                         print("Did not receive all steganograms.")
 
                         # Ready return code
-                        self.ready_to_receive = 0
                         self.stopTransmissionResponse = to_python(error)
                         self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
 
@@ -126,7 +127,6 @@ class StegServer(object):
                     self.finished_receiving = True
                     self.steganograms = sniff_thread.stop()
                     print(f"Steganograms received: {str(len(self.steganograms))}")
-
 
                     if len(self.steganograms) != 0:
 
@@ -158,17 +158,14 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                            
-                    
+
+
                     else:
                         print("Did not receive all steganograms.")
 
                         # Ready return code
-                        self.ready_to_receive = 0
                         self.stopTransmissionResponse = to_python(error)
                         self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-
-                    
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
@@ -178,6 +175,7 @@ class StegServer(object):
                 traceback.print_exc(e)
                 sock.close()
                 sys.exit()
+
 
 def main():
     global sock
@@ -199,6 +197,7 @@ def main():
 
     # Process incoming messages
     steg_server.handle()
+
 
 if __name__ == "__main__":
     try:
