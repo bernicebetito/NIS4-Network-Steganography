@@ -78,6 +78,7 @@ class StegServer(object):
 
                         # Extract and interpret key
                         if type(extractor.run(self.steganograms + missing_steganograms, received_hash)) == list:
+                            sniff_thread = AsyncSniffer(filter='port 11234')
                             sniff_thread.start()
                             missing_packets = extractor.run(self.steganograms, received_hash)
                             missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
@@ -130,6 +131,7 @@ class StegServer(object):
 
                         # Extract and interpret key
                         if type(extractor.run(self.steganograms, received_hash)) == list:
+                            sniff_thread = AsyncSniffer(filter='port 11234')
                             sniff_thread.start()
                             missing_packets = extractor.run(self.steganograms, received_hash)
                             missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
