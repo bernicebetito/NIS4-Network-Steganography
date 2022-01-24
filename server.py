@@ -79,10 +79,11 @@ class StegServer(object):
                         # Extract and interpret key
                         if type(extractor.run(self.steganograms + missing_steganograms, received_hash)) == list:
                             sniff_thread.start()
-                            missing_packets = extractor.run(steganograms, received_hash)
+                            missing_packets = extractor.run(self.steganograms, received_hash)
                             missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
                             self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                            print("Received steganograms are missing, attempting to recover missing steganograms.")
                         else:
                             self.ready_to_receive = 0
                             key, result, computed_hash = extractor.run(self.steganograms + missing_steganograms, received_hash)
@@ -134,6 +135,7 @@ class StegServer(object):
                             missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
                             self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                            print("Received steganograms are missing, attempting to recover missing steganograms.")
                         else:
                             self.ready_to_receive = 0
                             key, result, computed_hash = extractor.run(self.steganograms, received_hash)
