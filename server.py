@@ -39,6 +39,7 @@ class StegServer(object):
         global sock
         self.ready_to_receive = 0
         self.finished_receiving = False
+        extractor = extractionClass.extractionClass()
 
         while True:
             try:
@@ -64,39 +65,94 @@ class StegServer(object):
                     sniff_thread.start()
                     print("Sniff started")
 
-                # Handle Stop Transmission Message
-                if self.message["command"] == "stop" and self.ready_to_receive == 1:
-                    print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
-                    self.ready_to_receive = 0
+                if self.message["command"] == "missing" and self.ready_to_receive == 1:
+                    print("Client " + str(self.clientAddress) + " has finished sending the missing steganograms.")
                     received_hash = self.message["key_hash"]
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
-                    steganograms = sniff_thread.stop()
-                    print(f"Steganograms received: {str(len(steganograms))}")
-                    
+                    missing_steganograms = sniff_thread.stop()
+                    print(f"Steganograms received: {str(len(missing_steganograms))}")
 
-                    if len(steganograms) != 0:
+                    if len(missing_steganograms) != 0:
 
                         # Extract and interpret key
-                        extractor = extractionClass.extractionClass()
-                        key, result, computed_hash = extractor.run(steganograms, received_hash)
-
-                        if result:
-                            print(f"Key {key} verified correct")
-                            print(f"Computed hash {computed_hash}")
-                            print(f"Received hash {received_hash}")
-
-                            # Ready return code
-                            self.stopTransmissionResponse = to_python(success)
+                        if type(extractor.run(self.steganograms + missing_steganograms, received_hash)) == list:
+                            sniff_thread.start()
+                            missing_packets = extractor.run(steganograms, received_hash)
+                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
+                            self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-
                         else:
-                            print("Key hash computed is incorrect from received hash")
+                            self.ready_to_receive = 0
+                            key, result, computed_hash = extractor.run(self.steganograms + missing_steganograms, received_hash)
 
-                            # Ready return code
-                            self.stopTransmissionResponse = to_python(error)
+                            if result:
+                                print(f"Key {key} verified correct")
+                                print(f"Computed hash {computed_hash}")
+                                print(f"Received hash {received_hash}")
+
+                                # Ready return code
+                                self.stopTransmissionResponse = to_python(success)
+                                self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+                            else:
+                                print("Key hash computed is incorrect from received hash")
+
+                                # Ready return code
+                                self.stopTransmissionResponse = to_python(error)
+                                self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+
+                    else:
+                        print("Did not receive all steganograms.")
+
+                        # Ready return code
+                        self.stopTransmissionResponse = to_python(error)
+                        self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+                    # Send return code
+                    sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
+
+                # Handle Stop Transmission Message
+                if self.message["command"] == "stop" and self.ready_to_receive == 1:
+                    print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
+                    received_hash = self.message["key_hash"]
+
+                    # Stop Sniffing Steganograms
+                    self.finished_receiving = True
+                    self.steganograms = sniff_thread.stop()
+                    print(f"Steganograms received: {str(len(self.steganograms))}")
+
+
+                    if len(self.steganograms) != 0:
+
+                        # Extract and interpret key
+                        if type(extractor.run(self.steganograms, received_hash)) == list:
+                            sniff_thread.start()
+                            missing_packets = extractor.run(self.steganograms, received_hash)
+                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
+                            self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                        else:
+                            self.ready_to_receive = 0
+                            key, result, computed_hash = extractor.run(self.steganograms, received_hash)
+
+                            if result:
+                                print(f"Key {key} verified correct")
+                                print(f"Computed hash {computed_hash}")
+                                print(f"Received hash {received_hash}")
+
+                                # Ready return code
+                                self.stopTransmissionResponse = to_python(success)
+                                self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+
+                            else:
+                                print("Key hash computed is incorrect from received hash")
+
+                                # Ready return code
+                                self.stopTransmissionResponse = to_python(error)
+                                self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
                             
                     
                     else:
