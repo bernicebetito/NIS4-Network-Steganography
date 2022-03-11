@@ -9,6 +9,13 @@ import hashlib
 
 class InsertionClass (object):
 
+    def __init__(self):
+        self.dns_types = ["A", "NS", "MD", "MF",
+                          "CNAME", "SOA", "MB", "MG",
+                          "MR", "NULL", "WKS", "PTR",
+                          "HINFO", "MINFO", "MX", "TXT",
+                          "AXFR", "MAILB", "MAILA", "ANY"]
+
     def getKey(self):
         # ----------------------------------------
         # Symmetric Key Generation Module
@@ -37,7 +44,7 @@ class InsertionClass (object):
             packet = IP(src=src_address, dst=dst_address, options=[
                 timestamp_option, timestamp_option, timestamp_option,
                 timestamp_option, timestamp_option
-            ]) / UDP(dport=11234) / DNS(id=dns_ctr, qd=DNSQR(qname=qdomain, qtype="A"))
+            ]) / UDP(dport=11234) / DNS(id=dns_ctr, qd=DNSQR(qname=qdomain, qtype=random.choice(self.dns_types)))
             steganograms.append(packet)
             dns_ctr += 1
 
@@ -120,7 +127,7 @@ class InsertionClass (object):
                 insert_option = binascii.unhexlify(ovflw_flg)
                 dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
-            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype="A"))
+            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype=random.choice(self.dns_types)))
             steganograms.insert(index_dummy[i] + i, packet)
 
         return steganograms, payloadB

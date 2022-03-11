@@ -30,12 +30,18 @@ src_address = "192.168.254.108"
 dst_address = "192.168.254.132"
 
 dns_ctr = 0
+dns_types = ["A", "NS", "MD", "MF",
+             "CNAME", "SOA", "MB", "MG",
+             "MR", "NULL", "WKS", "PTR",
+             "HINFO", "MINFO", "MX", "TXT",
+             "AXFR", "MAILB",  "MAILA", "ANY"]
+
 while (len(steganograms) != n):
     timestamp_option = IPOption(b'\x44')
     packet = IP(src=src_address, dst=dst_address, options=[
         timestamp_option, timestamp_option, timestamp_option,
         timestamp_option, timestamp_option
-    ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype="A"))
+    ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype=random.choice(dns_types)))
     steganograms.append(packet)
     dns_ctr += 1
 
@@ -116,7 +122,7 @@ for curr_steg in range(num_steg):
             dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
         packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=random.randint(0, 15),
-                 qd=DNSQR(qname="www.goog1e.com", qtype="A"))
+                 qd=DNSQR(qname="www.goog1e.com", qtype=random.choice(dns_types)))
         steganograms.insert(curr_index + j, packet)
     print("index: ", curr_index, "packets: ", num_packets, end="\n\n")
     curr_index += num_packets
@@ -124,7 +130,7 @@ for curr_steg in range(num_steg):
 # Print Payload Hash
 print("\n\n", end="Payload Hash: ")
 print(payloadB.digest(), end="\n\n")
-
+# """
 # Print contents of steganogram packets
 packet_count = 1
 print("\n{:<51}\n".format("=" * 51))
@@ -135,7 +141,7 @@ for i in steganograms:
     print("\n{:<51}\n".format("x" * 51))
 
 print("\n{:<51}\n".format("=" * 51))
-
+# """
 # ------------------------- !!! NOT PART OF THE PROCESS !!! -------------------------
 # This part is for extraction & key interpretation
 """
@@ -324,5 +330,6 @@ extracted_payload = bytes([a ^ b for a, b in zip(xor_key, extracted_payload)])
 print(key)
 print(xor_key)
 print(extracted_payload)
+
 
 # send(steganograms)
