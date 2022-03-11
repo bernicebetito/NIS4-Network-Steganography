@@ -35,13 +35,26 @@ dns_types = ["A", "NS", "MD", "MF",
              "MR", "NULL", "WKS", "PTR",
              "HINFO", "MINFO", "MX", "TXT",
              "AXFR", "MAILB",  "MAILA", "ANY"]
+steg_websites = [
+    "www.macys.com",
+    "www.imdb.com",
+    "www.allrecipes.com",
+    "www.walgreens.com",
+    "www.cheatsheet.com",
+
+    "www.instagram.com",
+    "www.wikipedia.org",
+    "www.twitch.tv",
+    "www.imgur.com",
+    "www.quora.com"
+]
 
 while (len(steganograms) != n):
     timestamp_option = IPOption(b'\x44')
     packet = IP(src=src_address, dst=dst_address, options=[
         timestamp_option, timestamp_option, timestamp_option,
         timestamp_option, timestamp_option
-    ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname="www.google.com", qtype=random.choice(dns_types)))
+    ]) / UDP(dport=12345) / DNS(id=dns_ctr, qd=DNSQR(qname=random.choice(steg_websites), qtype=random.choice(dns_types)))
     steganograms.append(packet)
     dns_ctr += 1
 
@@ -110,6 +123,20 @@ random.shuffle(steganograms)
 # Insertion of dummy packets
 curr_index = 0
 num_steg = len(steganograms)
+rand_websites = [
+    "www.accuweather.com",
+    "www.costco.com",
+    "www.homedepot.com",
+    "www.webmd.com",
+    "www.outbrain.com",
+
+    "www.lowes.com",
+    "www.kohls.com",
+    "www.office.com",
+    "www.blogspot.com",
+    "www.betsbuy.com"
+]
+
 for curr_steg in range(num_steg):
     curr_index += 1
     num_packets = random.randint(1, 3)
@@ -122,7 +149,7 @@ for curr_steg in range(num_steg):
             dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
         packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=12345) / DNS(id=random.randint(0, 15),
-                 qd=DNSQR(qname="www.goog1e.com", qtype=random.choice(dns_types)))
+                 qd=DNSQR(qname=random.choice(rand_websites), qtype=random.choice(dns_types)))
         steganograms.insert(curr_index + j, packet)
     print("index: ", curr_index, "packets: ", num_packets, end="\n\n")
     curr_index += num_packets
@@ -178,7 +205,7 @@ for x in range(5):
 # Append steganograms to the missing_steganograms list except for the
 # actual ones with an index which is in the missing_indexes list
 for i in steganograms:
-    if "google" in i[DNS].qd.qname.decode():
+    if i[DNS].qd.qname.decode() in steg_websites:
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -200,7 +227,7 @@ for i in steganograms:
 # Extract the counter of each steganogram
 extracted = []
 for i in missing_steganograms:
-    if "google" in i[DNS].qd.qname.decode():
+    if i[DNS].qd.qname.decode() in steg_websites:
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -224,7 +251,7 @@ for i in missing_steganograms:
 # It returns the missing steganogram if found
 def getMissingSteg(steg_num):
     for i in steganograms:
-        if "google" in i[DNS].qd.qname.decode():
+        if i[DNS].qd.qname.decode() in steg_websites:
             temp_bytes = binascii.hexlify(bytes(i))
             payload_ctr = False
             for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -267,7 +294,7 @@ print(extracted_indexes)
 # getMissingSteg() for each element in the list
 for x in extracted_indexes:
     missing_steg = getMissingSteg(x)
-    if "google" in missing_steg[DNS].qd.qname.decode():
+    if missing_steg[DNS].qd.qname.decode() in steg_websites:
         temp_bytes = binascii.hexlify(bytes(missing_steg))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -287,7 +314,7 @@ for x in extracted_indexes:
 print("\n\n")
 test_extract = ""
 for i in sorted_steganograms:
-    if "google" in i[DNS].qd.qname.decode():
+    if i[DNS].qd.qname.decode() in steg_websites:
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):

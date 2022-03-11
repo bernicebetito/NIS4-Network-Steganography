@@ -27,7 +27,7 @@ class InsertionClass (object):
         xor_key = b"M\x80Q\xa7\x0b\x0c'h\x80\xc5\x9d@\xa1\xb2\xb8>?hl\xf6\xed7}\xb7\xbfQw\x06H\x93\xe5\xc3"
         return xor_key
 
-    def prepareSteganograms(self, qdomain, src_address, dst_address):
+    def prepareSteganograms(self, src_address, dst_address):
         # ----------------------------------------
         # Steganogram Preparation Module
         # ----------------------------------------
@@ -39,12 +39,26 @@ class InsertionClass (object):
         dst_address = dst_address
 
         dns_ctr = 0
+        steg_websites = [
+            "www.macys.com",
+            "www.imdb.com",
+            "www.allrecipes.com",
+            "www.walgreens.com",
+            "www.cheatsheet.com",
+
+            "www.instagram.com",
+            "www.wikipedia.org",
+            "www.twitch.tv",
+            "www.imgur.com",
+            "www.quora.com"
+        ]
+
         while (len(steganograms) != n):
             timestamp_option = IPOption(b'\x44')
             packet = IP(src=src_address, dst=dst_address, options=[
                 timestamp_option, timestamp_option, timestamp_option,
                 timestamp_option, timestamp_option
-            ]) / UDP(dport=11234) / DNS(id=dns_ctr, qd=DNSQR(qname=qdomain, qtype=random.choice(self.dns_types)))
+            ]) / UDP(dport=11234) / DNS(id=dns_ctr, qd=DNSQR(qname=random.choice(steg_websites), qtype=random.choice(self.dns_types)))
             steganograms.append(packet)
             dns_ctr += 1
 
@@ -119,6 +133,20 @@ class InsertionClass (object):
             start_dummy = curr_index + 1
             end_dummy = start_dummy + 2
 
+        rand_websites = [
+            "www.accuweather.com",
+            "www.costco.com",
+            "www.homedepot.com",
+            "www.webmd.com",
+            "www.outbrain.com",
+
+            "www.lowes.com",
+            "www.kohls.com",
+            "www.office.com",
+            "www.blogspot.com",
+            "www.betsbuy.com"
+        ]
+
         for i in range(len(index_dummy)):
             dummy_timestamp = []
             for timestamp_ctr in range(5):
@@ -127,14 +155,14 @@ class InsertionClass (object):
                 insert_option = binascii.unhexlify(ovflw_flg)
                 dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
-            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname="www.goog1e.com", qtype=random.choice(self.dns_types)))
+            packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname=random.choice(rand_websites), qtype=random.choice(self.dns_types)))
             steganograms.insert(index_dummy[i] + i, packet)
 
         return steganograms, payloadB
 
     def getSteganograms(self, src_address, dst_address, xor_key):
         key = self.getKey()
-        empty_steganograms = self.prepareSteganograms("www.google.com", src_address, dst_address)
+        empty_steganograms = self.prepareSteganograms(src_address, dst_address)
         self.steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, src_address, dst_address)
 
         return self.steganograms[:10], hash

@@ -7,11 +7,26 @@ import hashlib
 
 class extractionClass (object):
 
+    def __init__(self):
+        self.steg_websites = [
+            "www.macys.com",
+            "www.imdb.com",
+            "www.allrecipes.com",
+            "www.walgreens.com",
+            "www.cheatsheet.com",
+
+            "www.instagram.com",
+            "www.wikipedia.org",
+            "www.twitch.tv",
+            "www.imgur.com",
+            "www.quora.com"
+        ]
+
     def extractKey(self, steganograms):
         # Extract the counter of each steganogram
         self.extracted = []
         for i in steganograms:
-            if "google" in i[DNS].qd.qname.decode():
+            if i[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(i))
                 payload_ctr = False
                 for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -46,7 +61,7 @@ class extractionClass (object):
 
     def insertMissing(self, missing_steganograms):
         for x in missing_steganograms:
-            if "google" in x[DNS].qd.qname.decode():
+            if x[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(missing_steg))
                 payload_ctr = False
                 for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -66,7 +81,7 @@ class extractionClass (object):
     def formKey(self):
         self.test_extract = ""
         for i in self.sorted_steganograms:
-            if "google" in i[DNS].qd.qname.decode():
+            if i[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(i))
                 payload_ctr = False
                 for ctr in range(0, len(temp_bytes) - 2, 2):
