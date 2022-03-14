@@ -63,7 +63,7 @@ class StegServer(object):
                     print("Client " + str(self.clientAddress) + " has connected and will start sending steganograms.")
 
                     # Begin Sniffing Steganograms
-                    sniff_thread = AsyncSniffer(filter='port 11234')
+                    sniff_thread = AsyncSniffer(filter='udp port 11234')
                     sniff_thread.start()
                     print("Sniff started")
 
@@ -79,17 +79,16 @@ class StegServer(object):
                     if len(missing_steganograms) != 0:
 
                         # Extract and interpret key
-                        if type(extractor.run(self.steganograms + missing_steganograms, received_hash)) == list:
-                            sniff_thread = AsyncSniffer(filter='port 11234')
+                        key, result, computed_hash = extractor.run(missing_steganograms, received_hash, "MISSING")
+                        if type(key) == list:
+                            sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
-                            missing_packets = extractor.run(self.steganograms, received_hash)
-                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
+                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(key) + '}'
                             self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
                             print("Received steganograms are missing, attempting to recover missing steganograms.")
                         else:
                             self.ready_to_receive = 0
-                            key, result, computed_hash = extractor.run(self.steganograms + missing_steganograms, received_hash)
 
                             if result:
                                 print(f"Key {key} verified correct")
@@ -102,6 +101,8 @@ class StegServer(object):
 
                             else:
                                 print("Key hash computed is incorrect from received hash")
+                                print(f"Computed hash {computed_hash}")
+                                print(f"Received hash {received_hash}")
 
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
@@ -131,17 +132,18 @@ class StegServer(object):
                     if len(self.steganograms) != 0:
 
                         # Extract and interpret key
-                        if type(extractor.run(self.steganograms, received_hash)) == list:
-                            sniff_thread = AsyncSniffer(filter='port 11234')
+                        key, result, computed_hash = extractor.run(self.steganograms, received_hash, "INIT")
+                        if type(key) == list:
+                            sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
-                            missing_packets = extractor.run(self.steganograms, received_hash)
-                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(missing_packets) + '}'
+
+                            print("missing:\t", key)
+                            missing = '{"command":"ret_code", "code":"MISSING", "indexes":' + str(key) + '}'
                             self.stopTransmissionResponse = to_python(missing)
                             self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
                             print("Received steganograms are missing, attempting to recover missing steganograms.")
                         else:
                             self.ready_to_receive = 0
-                            key, result, computed_hash = extractor.run(self.steganograms, received_hash)
 
                             if result:
                                 print(f"Key {key} verified correct")
@@ -154,6 +156,8 @@ class StegServer(object):
 
                             else:
                                 print("Key hash computed is incorrect from received hash")
+                                print(f"Computed hash {computed_hash}")
+                                print(f"Received hash {received_hash}")
 
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)

@@ -205,7 +205,7 @@ for x in range(5):
 # Append steganograms to the missing_steganograms list except for the
 # actual ones with an index which is in the missing_indexes list
 for i in steganograms:
-    if i[DNS].qd.qname.decode() in steg_websites:
+    if any(i[DNS].qd.qname.decode() in w for w in steg_websites):
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -227,7 +227,7 @@ for i in steganograms:
 # Extract the counter of each steganogram
 extracted = []
 for i in missing_steganograms:
-    if i[DNS].qd.qname.decode() in steg_websites:
+    if any(i[DNS].qd.qname.decode() in w for w in steg_websites):
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -251,7 +251,7 @@ for i in missing_steganograms:
 # It returns the missing steganogram if found
 def getMissingSteg(steg_num):
     for i in steganograms:
-        if i[DNS].qd.qname.decode() in steg_websites:
+        if any(i[DNS].qd.qname.decode() in w for w in steg_websites):
             temp_bytes = binascii.hexlify(bytes(i))
             payload_ctr = False
             for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -294,7 +294,7 @@ print(extracted_indexes)
 # getMissingSteg() for each element in the list
 for x in extracted_indexes:
     missing_steg = getMissingSteg(x)
-    if missing_steg[DNS].qd.qname.decode() in steg_websites:
+    if any(missing_steg[DNS].qd.qname.decode() in w for w in steg_websites):
         temp_bytes = binascii.hexlify(bytes(missing_steg))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
@@ -314,7 +314,7 @@ for x in extracted_indexes:
 print("\n\n")
 test_extract = ""
 for i in sorted_steganograms:
-    if i[DNS].qd.qname.decode() in steg_websites:
+    if any(i[DNS].qd.qname.decode() in w for w in steg_websites):
         temp_bytes = binascii.hexlify(bytes(i))
         payload_ctr = False
         for ctr in range(0, len(temp_bytes) - 2, 2):
