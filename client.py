@@ -65,7 +65,8 @@ class StegClient(object):
     def create_steganograms(self):
         try:
             global ready_to_send
-            input("Ready to create steganograms, press any key to continue...")
+            print("Creating steganograms...")
+            #input("Ready to create steganograms, press any key to continue...")
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
@@ -81,7 +82,8 @@ class StegClient(object):
         try:
             global sock
             global ready_to_send
-            input("Ready to send steganograms, press any key to continue...")
+            print("Sending steganograms...")
+            #input("Ready to send steganograms, press any key to continue...")
             key_hash = self.hash
             self.stopTransmissionRequest = to_python(stop)
             self.stopTransmissionRequest["key_hash"] = str(key_hash.digest())
@@ -92,7 +94,7 @@ class StegClient(object):
                 send(self.steganograms)
 
                 # Ready Stop Transmission Message and send to server
-                input("Finished sending steganograms, press any key to continue...")
+                #input("Finished sending steganograms, press any key to continue...")
                 sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
                 # Process return code
@@ -107,7 +109,7 @@ class StegClient(object):
                 elif self.return_code["code"] == "ERROR":
                     print("Failed, server did not receive steganograms correctly.")
                     ready_to_send = 0
-                    input("Steganograms have been successfully sent, press any key to continue...")
+                    input("Press any key to continue...")
 
                 elif self.return_code["code"] == "MISSING":
                     print("Resending missing packets.")
@@ -123,7 +125,7 @@ class StegClient(object):
                 else:
                     print("An unexpected error has occured")
                     ready_to_send = 0
-                    input("Steganograms have been successfully sent, press any key to continue...")
+                    input("Press any key to continue...")
 
         except Exception as e:
             print(str(e))
