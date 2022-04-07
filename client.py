@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, InsertionClass, time
+import socket, json, sys, traceback, re, InsertionClass, time, psutil
 from scapy.all import *
 
 # JSON commands
@@ -44,6 +44,7 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
+            print(f'CPU usage while connecting with server = {psutil.cpu_percent()}')
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
@@ -67,9 +68,13 @@ class StegClient(object):
             global ready_to_send
             print("Creating steganograms...")
             #input("Ready to create steganograms, press any key to continue...")
+            start_time = time.time()
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
+            print(f'CPU usage after generating steganograms = {psutil.cpu_percent()}')
+            end_time = time.time() - start_time
+            print(f'Time taken to generate steganograms = {end_time} seconds')
             ready_to_send = 1
 
         except Exception as e:
@@ -91,7 +96,7 @@ class StegClient(object):
 
             while ready_to_send:
                 # Send steganograms
-                time.sleep(0.06)
+                #time.sleep(0.06)
                 send(self.steganograms)
 
                 # Ready Stop Transmission Message and send to server
@@ -101,6 +106,7 @@ class StegClient(object):
                 # Process return code
                 self.data = sock.recv(1024)
                 self.return_code = to_python(self.data.decode("utf-8"))
+                print(f'CPU usage while sending steganograms = {psutil.cpu_percent()}')
 
                 if self.return_code["code"] == "SUCCESS":
                     print("Success, server received all steganograms.")
@@ -149,6 +155,7 @@ while True:
 
 # Initialize client
 steg_client = StegClient(server_host, server_port)
+print(f'CPU usage before connecting to server = {psutil.cpu_percent()}')
 
 # Attempt to connect to server
 while has_connected == 0:
