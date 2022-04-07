@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, InsertionClass
+import socket, json, sys, traceback, re, InsertionClass, time
 from scapy.all import *
 
 # JSON commands
@@ -91,6 +91,7 @@ class StegClient(object):
 
             while ready_to_send:
                 # Send steganograms
+                time.sleep(0.06)
                 send(self.steganograms)
 
                 # Ready Stop Transmission Message and send to server
