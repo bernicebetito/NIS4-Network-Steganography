@@ -44,7 +44,7 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
-            print(f'CPU usage while connecting with server = {psutil.cpu_percent()}')
+            print(f"CPU usage while connecting with server = {psutil.cpu_percent()}")
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
