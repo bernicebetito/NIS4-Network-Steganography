@@ -170,6 +170,7 @@ class StegServer(object):
 
 
                     else:
+                        self.ready_to_receive = 0
                         print("Did not receive all steganograms.")
 
                         # Ready return code
