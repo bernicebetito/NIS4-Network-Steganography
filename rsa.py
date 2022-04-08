@@ -1,24 +1,52 @@
+from Crypto.Random import get_random_bytes
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
+import os
 
 
-def encrypt_message(message , publickey):
-	rsa_cipher = PKCS1_OAEP.new(publickey)
-	return rsa_cipher.encrypt(message.encode())
+def generate_keys():
+	keypair = RSA.generate(2048)
+	public_key = keypair.publickey().exportKey()
+	private_key = keypair.exportKey()
+
+	with open("public_key.pem", "wb") as file:
+		file.write(public_key)
+		file.close()
+
+	with open("private_key.pem", "wb") as file:
+		file.write(private_key)
+		file.close()
 
 
-def decrypt_message(encrypted_message, privatekey):
-	rsa_cipher = PKCS1_OAEP.new(privatekey)
-	return rsa_cipher.decrypt(encrypted_message).decode()
+def encrypt_message(message):
+	with open("public_key.pem", "rb") as file:
+		publickey = file.read()
+	imported_public = RSA.import_key(publickey)
+	rsa_cipher = PKCS1_OAEP.new(imported_public)
+	return rsa_cipher.encrypt(message)
 
 
-keypair = RSA.generate(2048)
-public_key = RSA.import_key(keypair.publickey().exportKey())
-private_key = RSA.import_key(keypair.exportKey())
+def decrypt_message(encrypted_message):
+	with open("private_key.pem", "rb") as file:
+		privatekey = file.read()
+	imported_private = RSA.import_key(privatekey)
+	rsa_cipher = PKCS1_OAEP.new(imported_private)
+	return rsa_cipher.decrypt(encrypted_message)
 
-message = "NIS4 - A Symmetric Key Distribution Protocol Utilizing Network Steganongraphy"
-encrypted_message = encrypt_message(message, public_key)
-decrypted_message = decrypt_message(encrypted_message, private_key)
+
+curr_path = os.getcwd()
+public_path = curr_path + r"\public_key.pem"
+private_path = curr_path + r"\private_key.pem"
+
+ispublic = os.path.isfile(public_path)
+isprivate = os.path.isfile(private_path)
+
+if ispublic is False or isprivate is False:
+	generate_keys()
+
+message = get_random_bytes(32)
+encrypted_message = encrypt_message(message)
+decrypted_message = decrypt_message(encrypted_message)
 
 print(f"Message:\t{message}")
 print(f"Encrypted:\t{encrypted_message}")
