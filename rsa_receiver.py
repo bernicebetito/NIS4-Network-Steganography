@@ -8,7 +8,7 @@ rsa_class = rsaClass.rsaClass()
 rsa_class.generate_keys()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ip_address = input("Enter IP address of client:\t")
+ip_address = input("Enter IP address of receiver:\t")
 sock.bind((ip_address, 5555))
 data = sock.recvfrom(1024)
 

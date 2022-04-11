@@ -11,7 +11,7 @@ message = get_random_bytes(32)
 encrypted_message = rsa_class.encrypt_message(message)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ip_address = input("Enter IP address of client:\t")
+ip_address = input("Enter IP address of receiver:\t")
 sock.sendto(encrypted_message, (ip_address, 5555))
 
 # For Testing / Comparing
