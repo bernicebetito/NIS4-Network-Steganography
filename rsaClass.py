@@ -36,7 +36,6 @@ class rsaClass():
 	def decrypt_message(self, encrypted_message):
 		with open("private_key.pem", "rb") as file:
 			privatekey = file.read()
-		print(f"Encrypt to Decrypt:\t{encrypted_message}\n\n")
 		imported_private = RSA.import_key(privatekey)
 		rsa_cipher = PKCS1_OAEP.new(imported_private)
 		return rsa_cipher.decrypt(encrypted_message)
