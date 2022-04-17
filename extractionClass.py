@@ -26,7 +26,7 @@ class extractionClass(object):
 
     def extractKey(self, steganograms):
         # Extract the counter of each steganogram
-        self.extracted = []
+        extractedKey = []
         for i in steganograms:
             if i[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(i))
@@ -45,10 +45,12 @@ class extractionClass(object):
 
                             # Append counter and the whole steganogram
                             if curr_steg not in self.sorted_indexes:
-                                self.extracted.append([curr_steg, i])
+                                extractedKey.append([curr_steg, i])
                             payload_ctr = True
 
-        # Sort the packet then append the packets to a new list
+        # Sort then append the packets to a new list
+        extractedKey.sort()
+        self.extracted = [n for n in extractedKey if n[1] not in self.sorted_indexes]
         self.extracted.sort()
 
     def getMissingIndexes(self):
@@ -64,6 +66,7 @@ class extractionClass(object):
         return self.extracted_indexes
 
     def insertMissing(self, missing_steganograms):
+        extractedKey = self.extracted
         for x in missing_steganograms:
             if x[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(x))
@@ -81,8 +84,10 @@ class extractionClass(object):
 
                             if curr_steg in self.extracted_indexes and curr_steg not in self.sorted_indexes:
                                 self.sorted_indexes.append(curr_steg)
-                                self.sorted_indexes.sort()
-                                self.extracted.append([curr_steg, x])
+                                extractedKey.append([curr_steg, x])
+        extractedKey.sort()
+        self.sorted_indexes.sort()
+        self.extracted = [n for n in extractedKey if n[1] not in self.sorted_indexes]
         self.extracted.sort()
 
     def formKey(self):
