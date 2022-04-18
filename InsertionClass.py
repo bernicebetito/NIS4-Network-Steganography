@@ -156,7 +156,7 @@ class InsertionClass (object):
                 dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
             packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname=random.choice(rand_websites), qtype=random.choice(self.dns_types)))
-            steganograms.insert(index_dummy[i] + i, packet)
+            #steganograms.insert(index_dummy[i] + i, packet)
 
         return steganograms, payloadB
 
@@ -170,9 +170,22 @@ class InsertionClass (object):
     # Retrieves the missing steganogram.
     # steg_ctr = int => Steganogram Counter
     def findSteganogram(self, steg_indexes):
+        steg_websites = [
+            "www.macys.com",
+            "www.imdb.com",
+            "www.allrecipes.com",
+            "www.walgreens.com",
+            "www.cheatsheet.com",
+
+            "www.instagram.com",
+            "www.wikipedia.org",
+            "www.twitch.tv",
+            "www.imgur.com",
+            "www.quora.com"
+        ]
         missing_steganograms = []
         for i in self.steganograms:
-            if "google" in i[DNS].qd.qname.decode():
+            if i[DNS].qd.qname.decode() in steg_websites:
                 temp_bytes = binascii.hexlify(bytes(i))
                 payload_ctr = False
                 for ctr in range(0, len(temp_bytes) - 2, 2):
