@@ -121,7 +121,7 @@ class InsertionClass (object):
             end += 16
 
         # Shuffle steganograms, for testing the sorting portion
-        random.shuffle(steganograms)
+        #random.shuffle(steganograms)
 
         # Add the dummy packets between steganograms
         index_dummy = []
@@ -156,7 +156,7 @@ class InsertionClass (object):
                 dummy_timestamp.append(IPOption(b'\x44\x04\x05' + insert_option))
 
             packet = IP(src=src_address, dst=dst_address, options=dummy_timestamp) / UDP(dport=11234) / DNS(id=i, qd=DNSQR(qname=random.choice(rand_websites), qtype=random.choice(self.dns_types)))
-            #steganograms.insert(index_dummy[i] + i, packet)
+            steganograms.insert(index_dummy[i] + i, packet)
 
         return steganograms, payloadB
 

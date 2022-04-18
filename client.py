@@ -96,7 +96,7 @@ class StegClient(object):
 
             while ready_to_send:
                 # Send steganograms
-                time.sleep(0.06)
+                time.sleep(0.1)
                 send(self.steganograms)
 
                 # Ready Stop Transmission Message and send to server
