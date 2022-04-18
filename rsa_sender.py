@@ -5,17 +5,27 @@ from Crypto.PublicKey import RSA
 
 
 rsa_class = rsaClass.rsaClass()
-rsa_class.generate_keys()
+#rsa_class.generate_keys()
 
-message = get_random_bytes(32)
-encrypted_message = rsa_class.encrypt_message(message)
-
+# Obtain sender and receiver IP addresses
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ip_address = input("Enter IP address of receiver:\t")
-sock.sendto(encrypted_message, (ip_address, 5555))
+ip_address = input("Enter IP address of sender:\t")
+sock.bind((ip_address, 4444))
+receiver_ip_address = input("Enter IP address of receiver:\t")
+
+# Obtain public key
+print("\n\nWaiting for public key...")
+data = sock.recvfrom(1024)
+print(f"Public key received from {data[1]}")
+
+#  Generate random message, encrypt and send 
+message = get_random_bytes(32)
+encrypted_message = rsa_class.encrypt(message, data[0])
+sock.sendto(encrypted_message, (receiver_ip_address, 5555))
+print("Encrypted message sent\n\n")
 
 # For Testing / Comparing
 decrypted_message = rsa_class.decrypt_message(encrypted_message)
-print(f"Message:\t{message}")
-print(f"Encrypted:\t{encrypted_message}")
+print(f"Message:\t{message}\n")
+print(f"Encrypted:\t{encrypted_message}\n")
 print(f"Decrypted:\t{decrypted_message}")
