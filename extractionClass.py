@@ -62,7 +62,7 @@ class extractionClass(object):
             self.sorted_steganograms.append(x[1])
             self.sorted_indexes.append(x[0])
         self.extracted_indexes = [steg_ctr for steg_ctr in range(0, 16) if steg_ctr not in self.sorted_indexes]
-        print("sorted indexes:\t", self.sorted_indexes)
+        print("Sorted indexes:\t", self.sorted_indexes)
         return self.extracted_indexes
 
     def insertMissing(self, missing_steganograms):
@@ -126,7 +126,7 @@ class extractionClass(object):
         else:
             self.extractKey(steganograms)
         missing_indexes = self.getMissingIndexes()
-        print("missing_indexes:\t", missing_indexes)
+        print("Missing indexes:\t", missing_indexes)
 
         if len(missing_indexes) == 0:
             self.payloadB = hash

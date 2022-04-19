@@ -8,6 +8,7 @@ error = '{"command":"ret_code", "code":"ERROR"}'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+testing_results = []
 
 # Function to convert a json object into a python object
 def to_python(jsonObj):
@@ -46,6 +47,7 @@ class StegServer(object):
         while True:
             try:
                 # Receive incoming message
+                print("Waiting for message...")
                 self.data = sock.recvfrom(1024)
                 self.message = to_python(self.data[0])
                 self.clientAddress = self.data[1]
@@ -57,7 +59,7 @@ class StegServer(object):
                     # Ready return code
                     self.startTransmissionResponse = to_python(begin)
                     self.startTransmissionResponseJSON = to_json(self.startTransmissionResponse)
-                    print(f'\nCPU usage after receiving connection request = {psutil.cpu_percent()}\n')
+                    testing_results.append(f'CPU usage after receiving connection request = {psutil.cpu_percent(0.1)}')
 
                     # Send return code
                     sock.sendto(bytes(self.startTransmissionResponseJSON, "utf-8"), self.clientAddress)
@@ -71,7 +73,7 @@ class StegServer(object):
                 if self.message["command"] == "missing" and self.ready_to_receive == 1:
                     print("Client " + str(self.clientAddress) + " has finished sending the missing steganograms.")
                     received_hash = self.message["key_hash"]
-                    print(f'\nCPU usage after receiving steganograms = {psutil.cpu_percent()}\n')
+                    print(f'\nCPU usage after receiving steganograms = {psutil.cpu_percent(0.1)}\n')
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
@@ -82,7 +84,7 @@ class StegServer(object):
 
                         # Extract and interpret key
                         key, result, computed_hash = extractor.run(missing_steganograms, received_hash, "MISSING")
-                        print(f'\nCPU usage after interpreting steganograms = {psutil.cpu_percent()}\n')
+                        testing_results.append(f'CPU usage after interpreting steganograms = {psutil.cpu_percent(0.1)}')
                         if type(key) == list:
                             sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
@@ -101,6 +103,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(success)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                                break
 
                             else:
                                 print("Key hash computed is incorrect from received hash")
@@ -110,6 +113,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                                break
 
 
                     else:
@@ -126,7 +130,7 @@ class StegServer(object):
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
                     print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
                     received_hash = self.message["key_hash"]
-                    print(f'\nCPU usage after receiving steganograms = {psutil.cpu_percent()}\n')
+                    testing_results.append(f'CPU usage after receiving steganograms = {psutil.cpu_percent(0.1)}')
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
@@ -137,7 +141,7 @@ class StegServer(object):
 
                         # Extract and interpret key
                         key, result, computed_hash = extractor.run(self.steganograms, received_hash, "INIT")
-                        print(f'\nCPU usage after interpreting steganograms = {psutil.cpu_percent()}\n')
+                        testing_results.append(f'CPU usage after interpreting steganograms = {psutil.cpu_percent(0.1)}')
                         if type(key) == list:
                             sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
@@ -158,6 +162,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(success)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                                break
 
                             else:
                                 print("Key hash computed is incorrect from received hash")
@@ -167,6 +172,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
+                                break
 
 
                     else:
@@ -204,10 +210,13 @@ def main():
 
     # Initialize server
     steg_server = StegServer(server_host, server_port)
-    print(f'\nCPU usage after setting up server = {psutil.cpu_percent()}\n')
+    testing_results.append(f'CPU usage after setting up server = {psutil.cpu_percent(0.1)}')
 
     # Process incoming messages
     steg_server.handle()
+
+    for result in testing_results:
+        print(result)
 
 
 if __name__ == "__main__":

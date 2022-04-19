@@ -74,8 +74,8 @@ class InsertionClass (object):
         payloadA = ''.join(format(i, '08b') for i in xored_key)
         payloadA = ("0" * (256 - len(payloadA))) + payloadA
 
-        print(f"Original key: {key}")
-        print(f"Key after XOR operation: {xored_key}")
+        #print(f"Original key: {key}")
+        #print(f"Key after XOR operation: {xored_key}")
 
         # Get the hash value of the payload
         payloadB = hashlib.sha256(key)

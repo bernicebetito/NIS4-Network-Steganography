@@ -9,6 +9,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 has_connected = 0
 ready_to_send = 0
 
+testing_results = []
 
 # Function to convert a json object into a python object
 def to_python(jsonObj):
@@ -32,7 +33,7 @@ class StegClient(object):
     def connect_to_server(self):
         try:
             global sock
-            input("Ready to connect to server, press any key to continue...")
+            #input("Ready to connect to server, press any key to continue...")
             print("Connecting to Server...")
 
             # Ready Begin Transmission Message and send to server
@@ -44,7 +45,7 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
-            print(f"\nCPU usage while connecting with server = {psutil.cpu_percent()}\n")
+            testing_results.append(f"CPU usage while connecting with server = {psutil.cpu_percent(0.1)}")
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
@@ -68,13 +69,13 @@ class StegClient(object):
             global ready_to_send
             print("Creating steganograms...")
             #input("Ready to create steganograms, press any key to continue...")
-            start_time = time.time()
+            generate_start_time = time.time()
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
-            print(f'\nCPU usage after generating steganograms = {psutil.cpu_percent()}\n')
-            end_time = time.time() - start_time
-            print(f'\nTime taken to generate steganograms = {end_time} seconds\n')
+            testing_results.append(f'CPU usage after generating steganograms = {psutil.cpu_percent(0.1)}')
+            generate_end_time = time.time() - generate_start_time
+            testing_results.append(f'Time taken to generate steganograms = {generate_end_time} seconds')
             ready_to_send = 1
 
         except Exception as e:
@@ -106,17 +107,17 @@ class StegClient(object):
                 # Process return code
                 self.data = sock.recv(1024)
                 self.return_code = to_python(self.data.decode("utf-8"))
-                print(f'\nCPU usage while sending steganograms = {psutil.cpu_percent()}\n')
+                testing_results.append(f'CPU usage while sending steganograms = {psutil.cpu_percent(0.1)}')
 
                 if self.return_code["code"] == "SUCCESS":
                     print("Success, server received all steganograms.")
                     ready_to_send = 0
-                    input("Steganograms have been successfully sent, press any key to continue...")
+                    #input("Steganograms have been successfully sent, press any key to continue...")
 
                 elif self.return_code["code"] == "ERROR":
                     print("Failed, server did not receive steganograms correctly.")
                     ready_to_send = 0
-                    input("Press any key to continue...")
+                    #input("Press any key to continue...")
 
                 elif self.return_code["code"] == "MISSING":
                     print("Resending missing packets.")
@@ -132,7 +133,7 @@ class StegClient(object):
                 else:
                     print("An unexpected error has occured")
                     ready_to_send = 0
-                    input("Press any key to continue...")
+                    #input("Press any key to continue...")
 
         except Exception as e:
             print(str(e))
@@ -155,7 +156,8 @@ while True:
 
 # Initialize client
 steg_client = StegClient(server_host, server_port)
-print(f'\nCPU usage before connecting to server = {psutil.cpu_percent()}\n')
+testing_results.append(f'CPU usage before connecting to server = {psutil.cpu_percent(0.1)}')
+total_time_start = time.time()
 
 # Attempt to connect to server
 while has_connected == 0:
@@ -168,4 +170,10 @@ while ready_to_send == 0:
 while ready_to_send == 1:
     steg_client.send_steganograms()
 
+total_time_end = time.time() - total_time_start
+testing_results.append(f'Total time taken for the program to run = {total_time_end} seconds')
+
 sock.close()
+
+for result in testing_results:
+    print(result)
