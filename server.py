@@ -103,7 +103,6 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(success)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                                break
 
                             else:
                                 print("Key hash computed is incorrect from received hash")
@@ -113,7 +112,6 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                                break
 
 
                     else:
@@ -125,6 +123,7 @@ class StegServer(object):
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
+                    break
 
                 # Handle Stop Transmission Message
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
@@ -162,8 +161,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(success)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                                break
-
+                                
                             else:
                                 print("Key hash computed is incorrect from received hash")
                                 print(f"Computed hash {computed_hash}")
@@ -172,8 +170,7 @@ class StegServer(object):
                                 # Ready return code
                                 self.stopTransmissionResponse = to_python(error)
                                 self.stopTransmissionResponseJSON = to_json(self.stopTransmissionResponse)
-                                break
-
+    
 
                     else:
                         self.ready_to_receive = 0
@@ -185,6 +182,7 @@ class StegServer(object):
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
+                    break
 
             except Exception as e:
                 print(str(e))
