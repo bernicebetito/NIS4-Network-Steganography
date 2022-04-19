@@ -13,13 +13,13 @@ sender_ip_address = input("Enter IP address of sender:\t")
 
 start_time = time.time()
 
-testing_results.append(f'CPU usage before key generation - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage before key generation - {psutil.cpu_percent()}')
 
 # Generate public and private keys
 rsa_class = rsaClass.rsaClass()
 rsa_class.generate_keys()
 
-testing_results.append(f'CPU usage after key generation - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage after key generation - {psutil.cpu_percent()}')
 
 # Send public key to sender
 public_key = rsa_class.get_public_key()
@@ -31,13 +31,13 @@ data = sock.recvfrom(1024)
 print(f"Message received from {data[1]}")
 print(f"Data Received:\t{data}\n")
 
-testing_results.append(f'CPU usage before decryption - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage before decryption - {psutil.cpu_percent()}')
 
 # Decrypt encrypted message
 decrypted_message = rsa_class.decrypt_message(data[0])
 print(f"Decrypted:\t{decrypted_message}")
 
-testing_results.append(f'CPU usage after decryption - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage after decryption - {psutil.cpu_percent()}')
 
 end_time = time.time() - start_time
 

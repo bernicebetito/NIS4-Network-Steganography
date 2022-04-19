@@ -20,7 +20,7 @@ data = sock.recvfrom(1024)
 start_time = time.time()
 print(f"Public key received from {data[1]}")
 
-testing_results.append(f'CPU usage before encryption - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage before encryption - {psutil.cpu_percent()}')
 
 #  Generate random message, encrypt and send 
 message = get_random_bytes(32)
@@ -28,7 +28,7 @@ encrypted_message = rsa_class.encrypt(message, data[0])
 sock.sendto(encrypted_message, (receiver_ip_address, 5555))
 print("Encrypted message sent\n\n")
 
-testing_results.append(f'CPU usage after encryption - {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage after encryption - {psutil.cpu_percent()}')
 
 end_time = time.time() - start_time
 testing_results.append(f'Program elapsed time - {end_time} seconds')

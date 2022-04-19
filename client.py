@@ -45,7 +45,7 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
-            testing_results.append(f"CPU usage while connecting with server = {psutil.cpu_percent(0.1)}")
+            testing_results.append(f"CPU usage while connecting with server = {psutil.cpu_percent()}")
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
@@ -73,7 +73,7 @@ class StegClient(object):
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
-            testing_results.append(f'CPU usage after generating steganograms = {psutil.cpu_percent(0.1)}')
+            testing_results.append(f'CPU usage after generating steganograms = {psutil.cpu_percent()}')
             generate_end_time = time.time() - generate_start_time
             testing_results.append(f'Time taken to generate steganograms = {generate_end_time} seconds')
             ready_to_send = 1
@@ -107,7 +107,7 @@ class StegClient(object):
                 # Process return code
                 self.data = sock.recv(1024)
                 self.return_code = to_python(self.data.decode("utf-8"))
-                testing_results.append(f'CPU usage while sending steganograms = {psutil.cpu_percent(0.1)}')
+                testing_results.append(f'CPU usage while sending steganograms = {psutil.cpu_percent()}')
 
                 if self.return_code["code"] == "SUCCESS":
                     print("Success, server received all steganograms.")
@@ -156,7 +156,7 @@ while True:
 
 # Initialize client
 steg_client = StegClient(server_host, server_port)
-testing_results.append(f'CPU usage before connecting to server = {psutil.cpu_percent(0.1)}')
+testing_results.append(f'CPU usage before connecting to server = {psutil.cpu_percent()}')
 total_time_start = time.time()
 
 # Attempt to connect to server
