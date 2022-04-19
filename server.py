@@ -123,7 +123,6 @@ class StegServer(object):
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
-                    break
 
                 # Handle Stop Transmission Message
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
@@ -182,7 +181,6 @@ class StegServer(object):
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
-                    break
 
             except Exception as e:
                 print(str(e))
@@ -213,15 +211,13 @@ def main():
     # Process incoming messages
     steg_server.handle()
 
-    for result in testing_results:
-        print(result)
-
-
 if __name__ == "__main__":
     try:
         main()
 
     except KeyboardInterrupt:
-        input("Service has been interrupted, press any key to exit...")
+        input("\nService has been interrupted, press any key to exit...")
         sock.close()
+        for result in testing_results:
+            print(result)
         sys.exit()
