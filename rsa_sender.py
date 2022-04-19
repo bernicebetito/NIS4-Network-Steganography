@@ -34,10 +34,10 @@ end_time = time.time() - start_time
 testing_results.append(f'Program elapsed time - {end_time} seconds')
 
 # For Testing / Comparing
-decrypted_message = rsa_class.decrypt_message(encrypted_message)
+#decrypted_message = rsa_class.decrypt_message(encrypted_message)
 print(f"Message:\t{message}\n")
 print(f"Encrypted:\t{encrypted_message}\n")
-print(f"Decrypted:\t{decrypted_message}")
+#print(f"Decrypted:\t{decrypted_message}")
 
 for result in testing_results:
     print(result)
