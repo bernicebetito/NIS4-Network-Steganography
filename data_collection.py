@@ -16,6 +16,9 @@ def collect_data(interval):
             sheet1.write(row, 1, psutil.cpu_percent(interval))
             row += 1
             time += interval
+            if row == 10:
+                break
+        wb.save("data.xls")
     
     except KeyboardInterrupt:
         input("Data collection stopped, press any key to continue...")
