@@ -6,6 +6,9 @@ from scapy.all import *
 import binascii
 # Hash equivalent of key
 import hashlib
+# DNS Types, DNS Domains, Dummy Packets
+import random
+
 
 class InsertionClass (object):
 
@@ -69,16 +72,13 @@ class InsertionClass (object):
         # Payload Insertion Module
         # ----------------------------------------
 
+        # Get the hash value of the payload
+        payloadB = hashlib.sha256(key)
+
         # Perform XOR operation on key and turn into binary
         xored_key = bytes([a ^ b for a, b in zip(key, xor_key)])
         payloadA = ''.join(format(i, '08b') for i in xored_key)
         payloadA = ("0" * (256 - len(payloadA))) + payloadA
-
-        #print(f"Original key: {key}")
-        #print(f"Key after XOR operation: {xored_key}")
-
-        # Get the hash value of the payload
-        payloadB = hashlib.sha256(key)
 
         payload_ctr = 0
         start = 0
