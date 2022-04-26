@@ -16,7 +16,7 @@ def collect_data(interval):
             sheet1.write(row, 1, psutil.cpu_percent(interval))
             row += 1
             time += interval
-            if row == 10:
+            if row == 21:
                 break
         wb.save("data.xls")
     
@@ -24,5 +24,6 @@ def collect_data(interval):
         input("Data collection stopped, press any key to continue...")
         wb.save("data.xls")
 
-interval = input("Select interval in seconds for collecting CPU usage: ")
+#interval = input("Select interval in seconds for collecting CPU usage: ")
+interval = 0.05
 collect_data(float(interval))

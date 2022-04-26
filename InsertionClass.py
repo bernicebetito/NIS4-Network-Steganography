@@ -121,7 +121,7 @@ class InsertionClass (object):
             end += 16
 
         # Shuffle steganograms, for testing the sorting portion
-        #random.shuffle(steganograms)
+        random.shuffle(steganograms)
 
         # Add the dummy packets between steganograms
         index_dummy = []
@@ -165,7 +165,7 @@ class InsertionClass (object):
         empty_steganograms = self.prepareSteganograms(src_address, dst_address)
         self.steganograms, hash = self.payloadInsertion(key, xor_key, empty_steganograms, src_address, dst_address)
 
-        return self.steganograms[:10], hash
+        return self.steganograms, hash
 
     # Retrieves the missing steganogram.
     # steg_ctr = int => Steganogram Counter

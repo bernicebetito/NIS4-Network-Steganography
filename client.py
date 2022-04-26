@@ -145,7 +145,8 @@ class StegClient(object):
 regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 while True:
     # Set variables for server address and destination port
-    server_host = input('Enter IP address of server: ')
+    #server_host = input('Enter IP address of server: ')
+    server_host = "192.168.1.29"
     server_port = 5555
 
     result = bool(re.match(regex, server_host))
