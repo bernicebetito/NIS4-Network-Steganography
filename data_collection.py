@@ -20,6 +20,7 @@ def collect_data(interval):
             if row == 21:
                 break
         wb.save("data.xls")
+        print("Data collection stopped")
     
     except KeyboardInterrupt:
         input("Data collection stopped, press any key to continue...")

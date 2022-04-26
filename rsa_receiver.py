@@ -7,9 +7,11 @@ testing_results = []
 
 # Obtain receiver and sender IP addresses
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ip_address = input("Enter IP address of receiver:\t")
+#ip_address = input("Enter IP address of receiver:\t")
+ip_address = "192.168.1.29"
 sock.bind((ip_address, 5555))
-sender_ip_address = input("Enter IP address of sender:\t")
+#sender_ip_address = input("Enter IP address of sender:\t")
+sender_ip_address = "192.168.1.30"
 
 start_time = time.time()
 
