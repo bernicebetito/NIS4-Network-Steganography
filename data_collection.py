@@ -12,8 +12,9 @@ def collect_data(interval):
     print("Data collection started")
     try:
         while True:
+            cpu = psutil.cpu_percent(interval)
             sheet1.write(row, 0, time)
-            sheet1.write(row, 1, psutil.cpu_percent(interval))
+            sheet1.write(row, 1, cpu)
             row += 1
             time += interval
             if row == 21:
