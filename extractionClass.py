@@ -91,7 +91,7 @@ class extractionClass(object):
         self.extracted.sort()
 
     def formKey(self):
-        self.test_extract = ""
+        self.key = ""
         for i in self.sorted_steganograms:
             if i[DNS].qd.qname.decode() in self.steg_websites:
                 temp_bytes = binascii.hexlify(bytes(i))
@@ -104,14 +104,14 @@ class extractionClass(object):
                             temp_bin = bin(int(temp_hex, 16))[2:]
                             temp_bin = ("0" * (8 - len(temp_bin))) + temp_bin
                             temp_bin = temp_bin[:4]
-                            self.test_extract += temp_bin
+                            self.key += temp_bin
                         else:
                             payload_ctr = True
 
     def interpretKey(self):
         # Turn the binary into bytes
         xor_key = b"M\x80Q\xa7\x0b\x0c'h\x80\xc5\x9d@\xa1\xb2\xb8>?hl\xf6\xed7}\xb7\xbfQw\x06H\x93\xe5\xc3"
-        extracted_payload = bytes(int(self.test_extract[i: i + 8], 2) for i in range(0, len(self.test_extract), 8))
+        extracted_payload = bytes(int(self.key[i: i + 8], 2) for i in range(0, len(self.key), 8))
         # print(f"Extracted key: {extracted_payload}")
         extracted_payload = bytes([a ^ b for a, b in zip(xor_key, extracted_payload)])
         # print(f"Extracted key after performing XOR operation: {extracted_payload}")
