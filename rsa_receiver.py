@@ -22,6 +22,7 @@ rsa_class = rsaClass.rsaClass()
 start_comp_time = time.time()
 rsa_class.generate_keys()
 end_comp_time = time.time() - start_comp_time
+print(f'Time taken to generate key pair {end_comp_time} seconds')
 
 testing_results.append(f'CPU usage after key generation - {psutil.cpu_percent()}')
 
