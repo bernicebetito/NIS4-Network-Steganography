@@ -1,3 +1,4 @@
+from ipaddress import ip_address
 import socket, os, rsaClass, psutil, time
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import PKCS1_OAEP
@@ -10,9 +11,11 @@ rsa_class = rsaClass.rsaClass()
 
 # Obtain sender and receiver IP addresses
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ip_address = input("Enter IP address of sender:\t")
+#ip_address = input("Enter IP address of sender:\t")
+ip_address = "192.168.1.30"
 sock.bind((ip_address, 4444))
-receiver_ip_address = input("Enter IP address of receiver:\t")
+#receiver_ip_address = input("Enter IP address of receiver:\t")
+receiver_ip_address = "192.168.1.29"
 
 # Obtain public key
 print("\n\nWaiting for public key...")
