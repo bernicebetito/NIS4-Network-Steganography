@@ -17,6 +17,7 @@ receiver_ip_address = input("Enter IP address of receiver:\t")
 # Obtain public key
 print("\n\nWaiting for public key...")
 data = sock.recvfrom(1024)
+os.popen("python3 data_collection.py")
 start_time = time.time()
 print(f"Public key received from {data[1]}")
 

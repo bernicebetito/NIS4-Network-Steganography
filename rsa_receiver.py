@@ -1,4 +1,4 @@
-import socket, os, rsaClass, time, psutil
+import socket, rsaClass, time, psutil
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
@@ -19,7 +19,9 @@ testing_results.append(f'CPU usage before key generation - {psutil.cpu_percent()
 
 # Generate public and private keys
 rsa_class = rsaClass.rsaClass()
+start_comp_time = time.time()
 rsa_class.generate_keys()
+end_comp_time = time.time() - start_comp_time
 
 testing_results.append(f'CPU usage after key generation - {psutil.cpu_percent()}')
 
