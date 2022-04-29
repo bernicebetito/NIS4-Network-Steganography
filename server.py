@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, extractionClass, psutil
+import socket, json, sys, traceback, re, extractionClass, psutil, os
 from scapy.all import *
 
 # JSON Return Codes
@@ -55,6 +55,7 @@ class StegServer(object):
                 # Handle Begin Transmission Message
                 if self.message["command"] == "begin" and self.ready_to_receive == 0:
                     self.ready_to_receive = 1
+                    os.popen("python3 data_collection.py")
 
                     # Ready return code
                     self.startTransmissionResponse = to_python(begin)
