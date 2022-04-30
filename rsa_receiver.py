@@ -8,10 +8,10 @@ testing_results = []
 # Obtain receiver and sender IP addresses
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #ip_address = input("Enter IP address of receiver:\t")
-ip_address = "192.168.1.29"
+ip_address = "192.168.1.17"
 sock.bind((ip_address, 5555))
 #sender_ip_address = input("Enter IP address of sender:\t")
-sender_ip_address = "192.168.1.30"
+sender_ip_address = "192.168.1.17"
 
 start_time = time.time()
 
@@ -22,7 +22,7 @@ rsa_class = rsaClass.rsaClass()
 start_comp_time = time.time()
 rsa_class.generate_keys()
 end_comp_time = time.time() - start_comp_time
-print(f'Time taken to generate key pair {end_comp_time} seconds')
+
 
 testing_results.append(f'CPU usage after key generation - {psutil.cpu_percent()}')
 
@@ -39,7 +39,9 @@ print(f"Data Received:\t{data}\n")
 testing_results.append(f'CPU usage before decryption - {psutil.cpu_percent()}')
 
 # Decrypt encrypted message
+start_dec_time = time.time()
 decrypted_message = rsa_class.decrypt_message(data[0])
+end_dec_time = time.time() - start_dec_time
 print(f"Decrypted:\t{decrypted_message}")
 
 testing_results.append(f'CPU usage after decryption - {psutil.cpu_percent()}')
@@ -47,6 +49,8 @@ testing_results.append(f'CPU usage after decryption - {psutil.cpu_percent()}')
 end_time = time.time() - start_time
 
 testing_results.append(f'Program elapsed time - {end_time} seconds')
+print(f'Time taken to generate key pair {end_comp_time} seconds')
+print(f'Time taken to decrypt message {end_dec_time} seconds')
 
 for result in testing_results:
     print(result)

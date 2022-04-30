@@ -12,10 +12,10 @@ rsa_class = rsaClass.rsaClass()
 # Obtain sender and receiver IP addresses
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #ip_address = input("Enter IP address of sender:\t")
-ip_address = "192.168.1.30"
+ip_address = "192.168.1.17"
 sock.bind((ip_address, 4444))
 #receiver_ip_address = input("Enter IP address of receiver:\t")
-receiver_ip_address = "192.168.1.29"
+receiver_ip_address = "192.168.1.17"
 
 # Obtain public key
 print("\n\nWaiting for public key...")
@@ -28,7 +28,9 @@ testing_results.append(f'CPU usage before encryption - {psutil.cpu_percent()}')
 
 #  Generate random message, encrypt and send 
 message = get_random_bytes(32)
+start_enc_time = time.time()
 encrypted_message = rsa_class.encrypt(message, data[0])
+end_enc_time = time.time() - start_enc_time
 sock.sendto(encrypted_message, (receiver_ip_address, 5555))
 print("Encrypted message sent\n\n")
 
@@ -42,6 +44,8 @@ testing_results.append(f'Program elapsed time - {end_time} seconds')
 print(f"Message:\t{message}\n")
 print(f"Encrypted:\t{encrypted_message}\n")
 #print(f"Decrypted:\t{decrypted_message}")
+
+print(f'Time taken to encrypt message {end_enc_time} seconds')
 
 for result in testing_results:
     print(result)
