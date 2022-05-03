@@ -56,6 +56,7 @@ class StegServer(object):
                 if self.message["command"] == "begin" and self.ready_to_receive == 0:
                     self.ready_to_receive = 1
                     os.popen("python3 data_collection.py")
+                    self.start_time = time.time()
 
                     # Ready return code
                     self.startTransmissionResponse = to_python(begin)
@@ -187,6 +188,8 @@ class StegServer(object):
 
                     # Send return code
                     sock.sendto(bytes(self.stopTransmissionResponseJSON, "utf-8"), self.clientAddress)
+                    self.end_time = time.time() - self.start_time
+                    print(f'Run time = {self.end_time} seconds')
 
             except Exception as e:
                 print(str(e))
