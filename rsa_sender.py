@@ -20,11 +20,11 @@ receiver_ip_address = "192.168.1.17"
 # Obtain public key
 print("\n\nWaiting for public key...")
 data = sock.recvfrom(1024)
-os.popen("python3 data_collection.py")
+#os.popen("python3 data_collection.py")
 start_time = time.time()
 print(f"Public key received from {data[1]}")
 
-testing_results.append(f'CPU usage before encryption - {psutil.cpu_percent()}')
+#testing_results.append(f'CPU usage before encryption - {psutil.cpu_percent()}')
 
 #  Generate random message, encrypt and send 
 message = get_random_bytes(32)
@@ -34,10 +34,10 @@ end_enc_time = time.time() - start_enc_time
 sock.sendto(encrypted_message, (receiver_ip_address, 5555))
 print("Encrypted message sent\n\n")
 
-testing_results.append(f'CPU usage after encryption - {psutil.cpu_percent()}')
+#testing_results.append(f'CPU usage after encryption - {psutil.cpu_percent()}')
 
 end_time = time.time() - start_time
-testing_results.append(f'Program elapsed time - {end_time} seconds')
+#testing_results.append(f'Program elapsed time - {end_time} seconds')
 
 # For Testing / Comparing
 #decrypted_message = rsa_class.decrypt_message(encrypted_message)
@@ -47,5 +47,5 @@ print(f"Encrypted:\t{encrypted_message}\n")
 
 print(f'Time taken to encrypt message {end_enc_time} seconds')
 
-for result in testing_results:
-    print(result)
+#for result in testing_results:
+    #print(result)

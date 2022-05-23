@@ -55,7 +55,7 @@ class StegServer(object):
                 # Handle Begin Transmission Message
                 if self.message["command"] == "begin" and self.ready_to_receive == 0:
                     self.ready_to_receive = 1
-                    os.popen("python3 data_collection.py")
+                    #os.popen("python3 data_collection.py")
                     self.start_time = time.time()
 
                     # Ready return code
