@@ -37,7 +37,7 @@ print("Encrypted message sent\n\n")
 #testing_results.append(f'CPU usage after encryption - {psutil.cpu_percent()}')
 
 end_time = time.time() - start_time
-#testing_results.append(f'Program elapsed time - {end_time} seconds')
+testing_results.append(f'Program elapsed time - {end_time} seconds')
 
 # For Testing / Comparing
 #decrypted_message = rsa_class.decrypt_message(encrypted_message)
@@ -47,5 +47,5 @@ print(f"Encrypted:\t{encrypted_message}\n")
 
 print(f'Time taken to encrypt message {end_enc_time} seconds')
 
-#for result in testing_results:
-    #print(result)
+for result in testing_results:
+    print(result)

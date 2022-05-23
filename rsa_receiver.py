@@ -52,5 +52,5 @@ testing_results.append(f'Program elapsed time - {end_time} seconds')
 print(f'Time taken to generate key pair {end_comp_time} seconds')
 print(f'Time taken to decrypt message {end_dec_time} seconds')
 
-#for result in testing_results:
-    #print(result)
+for result in testing_results:
+    print(result)
