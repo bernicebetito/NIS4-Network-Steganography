@@ -45,8 +45,8 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
-            cpu = psutil.cpu_percent()
-            testing_results.append(f"CPU usage while connecting with server = {cpu}")
+            #cpu = psutil.cpu_percent()
+            #testing_results.append(f"CPU usage while connecting with server = {cpu}")
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
@@ -74,8 +74,8 @@ class StegClient(object):
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
-            cpu = psutil.cpu_percent()
-            testing_results.append(f'CPU usage after generating steganograms = {cpu}')
+            #cpu = psutil.cpu_percent()
+            #testing_results.append(f'CPU usage after generating steganograms = {cpu}')
             generate_end_time = time.time() - generate_start_time
             testing_results.append(f'Time taken to generate steganograms = {generate_end_time} seconds')
             ready_to_send = 1
@@ -109,8 +109,8 @@ class StegClient(object):
                 # Process return code
                 self.data = sock.recv(1024)
                 self.return_code = to_python(self.data.decode("utf-8"))
-                cpu = psutil.cpu_percent()
-                testing_results.append(f'CPU usage while sending steganograms = {cpu}')
+                #cpu = psutil.cpu_percent()
+                #testing_results.append(f'CPU usage while sending steganograms = {cpu}')
 
                 if self.return_code["code"] == "SUCCESS":
                     print("Success, server received all steganograms.")
@@ -160,8 +160,8 @@ while True:
 
 # Initialize client
 steg_client = StegClient(server_host, server_port)
-cpu = psutil.cpu_percent()
-testing_results.append(f'CPU usage before connecting to server = {cpu}')
+#cpu = psutil.cpu_percent()
+#testing_results.append(f'CPU usage before connecting to server = {cpu}')
 total_time_start = time.time()
 
 # Attempt to connect to server
