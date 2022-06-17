@@ -10,6 +10,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 testing_results = []
 
+
 # Function to convert a json object into a python object
 def to_python(jsonObj):
     data = json.loads(jsonObj)
@@ -55,14 +56,14 @@ class StegServer(object):
                 # Handle Begin Transmission Message
                 if self.message["command"] == "begin" and self.ready_to_receive == 0:
                     self.ready_to_receive = 1
-                    #os.popen("python3 data_collection.py")
+                    # os.popen("python3 data_collection.py")
                     self.start_time = time.time()
 
                     # Ready return code
                     self.startTransmissionResponse = to_python(begin)
                     self.startTransmissionResponseJSON = to_json(self.startTransmissionResponse)
-                    #cpu = psutil.cpu_percent()
-                    #testing_results.append(f'CPU usage after receiving connection request = {cpu}')
+                    # cpu = psutil.cpu_percent()
+                    # testing_results.append(f'CPU usage after receiving connection request = {cpu}')
 
                     # Send return code
                     sock.sendto(bytes(self.startTransmissionResponseJSON, "utf-8"), self.clientAddress)
@@ -76,8 +77,8 @@ class StegServer(object):
                 if self.message["command"] == "missing" and self.ready_to_receive == 1:
                     print("Client " + str(self.clientAddress) + " has finished sending the missing steganograms.")
                     received_hash = self.message["key_hash"]
-                    #cpu = psutil.cpu_percent()
-                    #print(f'\nCPU usage after receiving steganograms = {cpu}\n')
+                    # cpu = psutil.cpu_percent()
+                    # print(f'\nCPU usage after receiving steganograms = {cpu}\n')
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
@@ -88,8 +89,8 @@ class StegServer(object):
 
                         # Extract and interpret key
                         key, result, computed_hash = extractor.run(missing_steganograms, received_hash, "MISSING")
-                        #cpu = psutil.cpu_percent()
-                        #testing_results.append(f'CPU usage after interpreting steganograms = {cpu}')
+                        # cpu = psutil.cpu_percent()
+                        # testing_results.append(f'CPU usage after interpreting steganograms = {cpu}')
                         if type(key) == list:
                             sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
@@ -133,8 +134,8 @@ class StegServer(object):
                 if self.message["command"] == "stop" and self.ready_to_receive == 1:
                     print("Client " + str(self.clientAddress) + " has finished sending steganograms.")
                     received_hash = self.message["key_hash"]
-                    #cpu = psutil.cpu_percent()
-                    #testing_results.append(f'CPU usage after receiving steganograms = {cpu}')
+                    # cpu = psutil.cpu_percent()
+                    # testing_results.append(f'CPU usage after receiving steganograms = {cpu}')
 
                     # Stop Sniffing Steganograms
                     self.finished_receiving = True
@@ -145,8 +146,8 @@ class StegServer(object):
 
                         # Extract and interpret key
                         key, result, computed_hash = extractor.run(self.steganograms, received_hash, "INIT")
-                        #cpu = psutil.cpu_percent()
-                        #testing_results.append(f'CPU usage after interpreting steganograms = {cpu}')
+                        # cpu = psutil.cpu_percent()
+                        # testing_results.append(f'CPU usage after interpreting steganograms = {cpu}')
                         if type(key) == list:
                             sniff_thread = AsyncSniffer(filter='udp port 11234')
                             sniff_thread.start()
@@ -204,8 +205,7 @@ def main():
     regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
     while True:
         # Set variables for server address and server port
-        #server_host = input('Input server address: ')
-        server_host = "192.168.1.29"
+        server_host = "192.168.254.132"
         server_port = 5555
 
         result = bool(re.match(regex, server_host))
@@ -216,11 +216,12 @@ def main():
 
     # Initialize server
     steg_server = StegServer(server_host, server_port)
-    #cpu = psutil.cpu_percent()
-    #testing_results.append(f'CPU usage after setting up server = {cpu}')
+    # cpu = psutil.cpu_percent()
+    # testing_results.append(f'CPU usage after setting up server = {cpu}')
 
     # Process incoming messages
     steg_server.handle()
+
 
 if __name__ == "__main__":
     try:

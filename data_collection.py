@@ -2,6 +2,7 @@ import psutil
 import xlwt
 from xlwt import Workbook
 
+
 def collect_data(interval):
     wb = Workbook()
     sheet1 = wb.add_sheet('CPU USAGE')
@@ -26,6 +27,5 @@ def collect_data(interval):
         input("Data collection stopped, press any key to continue...")
         wb.save("data.xls")
 
-#interval = input("Select interval in seconds for collecting CPU usage: ")
 interval = 0.05
 collect_data(float(interval))

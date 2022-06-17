@@ -168,7 +168,6 @@ class InsertionClass (object):
         return self.steganograms, hash
 
     # Retrieves the missing steganogram.
-    # steg_ctr = int => Steganogram Counter
     def findSteganogram(self, steg_indexes):
         steg_websites = [
             "www.macys.com",

@@ -11,6 +11,7 @@ ready_to_send = 0
 
 testing_results = []
 
+
 # Function to convert a json object into a python object
 def to_python(jsonObj):
     data = json.loads(jsonObj)
@@ -33,7 +34,6 @@ class StegClient(object):
     def connect_to_server(self):
         try:
             global sock
-            #input("Ready to connect to server, press any key to continue...")
             print("Connecting to Server...")
 
             # Ready Begin Transmission Message and send to server
@@ -45,8 +45,8 @@ class StegClient(object):
             # Process return code
             self.data = sock.recv(1024)
             self.return_code = to_python(self.data.decode("utf-8"))
-            #cpu = psutil.cpu_percent()
-            #testing_results.append(f"CPU usage while connecting with server = {cpu}")
+            # cpu = psutil.cpu_percent()
+            # testing_results.append(f"CPU usage while connecting with server = {cpu}")
 
             if self.return_code["code"] == "BEGIN":
                 print("Success, established connection with server")
@@ -69,13 +69,12 @@ class StegClient(object):
         try:
             global ready_to_send
             print("Creating steganograms...")
-            #input("Ready to create steganograms, press any key to continue...")
             generate_start_time = time.time()
             xor_key = self.steganogram_maker.getXORKey()
             self.steganograms, self.hash = self.steganogram_maker.getSteganograms(
                 socket.gethostbyname(socket.gethostname()), self.server_host, xor_key)
-            #cpu = psutil.cpu_percent()
-            #testing_results.append(f'CPU usage after generating steganograms = {cpu}')
+            # cpu = psutil.cpu_percent()
+            # testing_results.append(f'CPU usage after generating steganograms = {cpu}')
             generate_end_time = time.time() - generate_start_time
             testing_results.append(f'Time taken to generate steganograms = {generate_end_time} seconds')
             ready_to_send = 1
@@ -91,7 +90,6 @@ class StegClient(object):
             global sock
             global ready_to_send
             print("Sending steganograms...")
-            #input("Ready to send steganograms, press any key to continue...")
             key_hash = self.hash
             self.stopTransmissionRequest = to_python(stop)
             self.stopTransmissionRequest["key_hash"] = str(key_hash.digest())
@@ -103,24 +101,21 @@ class StegClient(object):
                 send(self.steganograms)
 
                 # Ready Stop Transmission Message and send to server
-                #input("Finished sending steganograms, press any key to continue...")
                 sock.sendto(bytes(self.stopTransmissionRequestJSON, "utf-8"), (self.server_host, self.server_port))
 
                 # Process return code
                 self.data = sock.recv(1024)
                 self.return_code = to_python(self.data.decode("utf-8"))
-                #cpu = psutil.cpu_percent()
-                #testing_results.append(f'CPU usage while sending steganograms = {cpu}')
+                # cpu = psutil.cpu_percent()
+                # testing_results.append(f'CPU usage while sending steganograms = {cpu}')
 
                 if self.return_code["code"] == "SUCCESS":
                     print("Success, server received all steganograms.")
                     ready_to_send = 0
-                    #input("Steganograms have been successfully sent, press any key to continue...")
 
                 elif self.return_code["code"] == "ERROR":
                     print("Failed, server did not receive steganograms correctly.")
                     ready_to_send = 0
-                    #input("Press any key to continue...")
 
                 elif self.return_code["code"] == "MISSING":
                     print("Resending missing packets.")
@@ -136,7 +131,6 @@ class StegClient(object):
                 else:
                     print("An unexpected error has occured")
                     ready_to_send = 0
-                    #input("Press any key to continue...")
 
         except Exception as e:
             print(str(e))
@@ -148,20 +142,19 @@ class StegClient(object):
 regex = "^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
 while True:
     # Set variables for server address and destination port
-    #server_host = input('Enter IP address of server: ')
-    server_host = "192.168.1.29"
+    server_host = "192.168.254.132"
     server_port = 5555
 
     result = bool(re.match(regex, server_host))
-    if (result):
+    if result:
         break
     else:
         print("Invalid IP Address, please try again.\n")
 
 # Initialize client
 steg_client = StegClient(server_host, server_port)
-#cpu = psutil.cpu_percent()
-#testing_results.append(f'CPU usage before connecting to server = {cpu}')
+# cpu = psutil.cpu_percent()
+# testing_results.append(f'CPU usage before connecting to server = {cpu}')
 total_time_start = time.time()
 
 # Attempt to connect to server
