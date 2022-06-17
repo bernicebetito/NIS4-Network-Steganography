@@ -5,6 +5,8 @@ A study which aims to explore the use of network steganography.
 This study explores the possibility of using network steganography in concealing symmetric keys in its distribution
 
 ## Pre-requisites
+
+### Program Proper
 1. Python / Python3
   * Programming language used.
   * To download in **Linux**: `sudo apt-get install python3`
@@ -26,6 +28,16 @@ This study explores the possibility of using network steganography in concealing
   * To download in **Linux**: `sudo pip install pycryptodome`
   * To download in **Windows**: `pip install pycryptodome`
 
+### CPU Utilization Test
+1. PSUtil
+  * A Python library for accessing system details and process utilities.
+  * To download in **Linux**: `sudo pip install pycryptodome`
+  * To download in **Windows**: `pip install pycryptodome`
+2. XLWT
+  * A Python library for generating and editing spreadsheet files.
+  * To download in **Linux**: `sudo pip install pycryptodome`
+  * To download in **Windows**: `pip install pycryptodome`
+
 ## Download
 Download the project through the following commands:
 * Linux:
@@ -41,8 +53,13 @@ Once downloaded, the project can be used through the following commands:
   * Linux: `sudo python3 client.py`
   * Windows: `python client.py`
 
-Note:  
-_The IP address of the server would be needed upon running the server and client._
+To run the RSA program, the following commands are used:
+* For the sender:
+  * Linux: `sudo python3 rsa_sender.py`
+  * Windows: `python rsa_sender.py`
+* For the receiver:
+  * Linux: `sudo python3 rsa_receiver.py`
+  * Windows: `python rsa_receiver.py`
 
-## Guide
-To test the sorting of the steganograms, steganograms are intentionally shuffled before sending. Additionally, only a certain amount of steganograms are first sent in order to test the program's ability to determine if there are missing steganograms as well as it's ability to find and send these steganograms. 
+Note:  
+_To test the sorting of the steganograms, steganograms are intentionally shuffled before sending. Additionally, the IP address are hardcoded. To modify the IP addresses, the code must be modified._ 
