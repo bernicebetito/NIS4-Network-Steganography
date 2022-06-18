@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, extractionClass, psutil, os
+import socket, json, sys, traceback, re, extractionClass  # , psutil, os
 from scapy.all import *
 
 # JSON Return Codes

@@ -1,4 +1,4 @@
-import socket, json, sys, traceback, re, InsertionClass, time, psutil
+import socket, json, sys, traceback, re, InsertionClass, time  # , psutil
 from scapy.all import *
 
 # JSON commands
