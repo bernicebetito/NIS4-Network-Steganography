@@ -27,6 +27,9 @@ class InsertionClass (object):
         return key
 
     def getXORKey(self):
+        # ----------------------------------------
+        # Symmetric Key Generation Module
+        # ----------------------------------------
         xor_key = b"M\x80Q\xa7\x0b\x0c'h\x80\xc5\x9d@\xa1\xb2\xb8>?hl\xf6\xed7}\xb7\xbfQw\x06H\x93\xe5\xc3"
         return xor_key
 
@@ -169,6 +172,10 @@ class InsertionClass (object):
 
     # Retrieves the missing steganogram.
     def findSteganogram(self, steg_indexes):
+        # ----------------------------------------
+        # Payload Extraction Module
+        # ----------------------------------------
+
         steg_websites = [
             "www.macys.com",
             "www.imdb.com",
