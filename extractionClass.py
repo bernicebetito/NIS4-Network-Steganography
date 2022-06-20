@@ -150,6 +150,7 @@ class extractionClass(object):
             self.payloadB = hash
             self.formKey()
             key, result, computed_hash = self.interpretKey()
+            self.sorted_indexes = []
 
             return key, result, computed_hash
         else:
